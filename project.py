@@ -33,3 +33,4 @@ def add_real():
     curseur.close()
     connexion.commit()
     connexion.close()
+    print("coucou")
