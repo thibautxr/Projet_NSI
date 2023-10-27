@@ -14,7 +14,7 @@ def TableExist(table):
         if str(input("Voulez vous la créer ? O/N").lower()) == 'o':
             req = "CREATE TABLE {} (id_{} INTEGER UNIQUE NOT NULL PRIMARY KEY AUTOINCREMENT, ".format(table, table)     # Requête de base 
             print("ATTENTION : par défaut un attribut \"id_{}\" est créé en tant que clé primaire, n'eesayez pas d'ajouter une clé primaire".format(table))
-            while b:
+            while True:
                 a = str(input("Attribut suivant (nom PARAMETRES exemple : age INTEGER NOT NULL): "))
                 if a == '':
                     req = req[:-2] + ");"
