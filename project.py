@@ -76,13 +76,3 @@ def add_realisateur():
     curseur.close()
     connexion.commit()
     connexion.close()
-    print("coucou")
-
-connexion = sqlite3.connect("Film_realisateur_genre_nationalite.db")
-curseur = connexion.cursor()
-
-
-
-curseur.close()
-connexion.commit()
-connexion.close()
