@@ -7,18 +7,16 @@ def TableExist(table):
     try:
         curseur.execute("SELECT * FROM {}".format(table))
 
-    except sqlite3.OperationalError:
+    except sqlite3.OperationalError:            # Si la table n'existe pas
         print("ERREUR : La table {} n'existe pas".format(table))
         a = 0
-        b = True
         if str(input("Voulez vous la créer ? O/N").lower()) == 'o':
-            req = "CREATE TABLE {} (id_{} INTEGER UNIQUE NOT NULL PRIMARY KEY AUTOINCREMENT, ".format(table, table)
+            req = "CREATE TABLE {} (id_{} INTEGER UNIQUE NOT NULL PRIMARY KEY AUTOINCREMENT, ".format(table, table)     # Requête de base 
             print("ATTENTION : par défaut un attribut \"id_{}\" est créé en tant que clé primaire, n'eesayez pas d'ajouter une clé primaire".format(table))
             while b:
                 a = str(input("Attribut suivant (nom PARAMETRES exemple : age INTEGER NOT NULL): "))
                 if a == '':
-                    req = req[:-2]
-                    req = req + ");"
+                    req = req[:-2] + ");"
                     print(req)
                     curseur.execute(req)
                     break
