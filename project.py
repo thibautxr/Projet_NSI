@@ -1,7 +1,8 @@
 import sqlite3
+database = "Film_realisateur_genre_nationalite.db"
  
 def TableExist(table):
-    connexion = sqlite3.connect("Film_realisateur_genre_nationalite.db")
+    connexion = sqlite3.connect(database)
     curseur = connexion.cursor()
     boool = True
     try:
@@ -31,7 +32,7 @@ def TableExist(table):
 
 
 def add_realisateur():
-    connexion = sqlite3.connect("Film_realisateur_genre_nationalite.db")
+    connexion = sqlite3.connect(database)
     curseur = connexion.cursor()
     if not TableExist("nationalite"):
         curseur.close()
