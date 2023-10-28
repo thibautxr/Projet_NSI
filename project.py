@@ -75,106 +75,100 @@ def add_realisateur():
 
 
 # Composition de la table film : id_film, titre_film, annee_film, id_realisateur_film, id_nationalite_film, id_genre_film
-connexion = sqlite3.connect(database)
-curseur = connexion.cursor()
+def add_film():
+    connexion = sqlite3.connect(database)
+    curseur = connexion.cursor()
 
-curseur.execute("SELECT * FROM film")
-row = curseur.fetchall()
-for rows in row:
-    print(rows)
-
-
-if not TableExist("film"):
-    curseur.close()
-    connexion.commit()
-    connexion.close()
-    #return 1
-
-if not TableExist("nationalite"):
-    curseur.close()
-    connexion.commit()
-    connexion.close()
-    #return 1
-
-if not TableExist("genre"):
-    curseur.close()
-    connexion.commit()
-    connexion.close()
-    #return 1
-
-if not TableExist("realisateur"):
-    curseur.close()
-    connexion.commit()
-    connexion.close()
-    #return 1
-
-curseur.execute('SELECT * FROM nationalite')
-a = curseur.fetchall()
-temp = ''
-for i in a:
-    temp = temp + i[1] + ", "
-req = 'INSERT INTO film (titre_film, annee_film, id_realisateur_film, id_nationalite_film, id_genre_film) VALUES (?, ?, ?, ?, ?)'
-data = []
-a = ["Entrez le titre du film : ", "Entrez l'année de sortie du film : ", "Entrez le Nom Prenom du réalisateur : ", "Entrez la nationalité du film ($) : ", "Entrez le genre du film : "]
-for i in range(len(a)):
-   a[i] = a[i].replace('$', temp[:-2])                      # On remplace le '$' de la chaine a par toutes les nationalités contenues dans la table
-for i in range (len(a)):
-    data.append(str(input(a[i])))
-    if i == len(a) - 1:
-        curseur.execute('SELECT * FROM nationalite')                                                                #       |
-        b = curseur.fetchall()                                                                                      #       |
-        IsFound = False                                                                                             #       |
-        for c in range(len(b)):                                                                                     #       |
-            if data[len(data) - 2].upper() == b[c][1]:                                                              #       |
-                data[len(data) - 2] = b[c][0]                                                                       #       PASSER D'UNE NATIONALITE A UN ID
-                IsFound = True                                                                                      #       |
-                break                                                                                               #       |
-        if not IsFound:                                                                                             #       |
-            curseur.execute("INSERT INTO nationalite (nom_nationalite) VALUES ('{}')".format(data[len(data) - 2]))  #       |
-            print("Cette nationalité n'était pas dans la table, elle a donc été ajoutée")                           #       |
-
-        
-
-        curseur.execute('SELECT * FROM genre')                                                                      #       |
-        b = curseur.fetchall()                                                                                      #       |
-        IsFound = False                                                                                             #       |
-        for c in range(len(b)):                                                                                     #       |
-            if data[len(data) - 1].upper() == b[c][1]:                                                              #       PASSER D'UN
-                data[len(data) - 1] = b[c][0]                                                                       #       GENRE A UN ID
-                IsFound = True                                                                                      #       |
-        if not IsFound:                                                                                             #       |
-            curseur.execute("INSERT INTO genre (nom_genre) VALUES ('{}')".format(data[len(data) - 1]))              #       |
-            print("Ce genre n'était pas dans la table, il a donc été ajouté")                                       #       |
-            data[len(data) - 1] = b[len(b) - 1][0]
+    curseur.execute("SELECT * FROM film")
+    row = curseur.fetchall()
+    for rows in row:
+        print(rows)
 
 
+    if not TableExist("film"):
+        curseur.close()
+        connexion.commit()
+        connexion.close()
+        return 1
 
-        curseur.execute("SELECT id_realisateur, nom_realisateur, prenom_realisateur FROM realisateur")              #       |
-        b = curseur.fetchall()                                                                                      #       |
-        IsFound = False                                                                                             #       |
-        for c in range(len(b)):                                                                                     #       |
-            ConcD = b[c][1] + b[c][2]                                                                               #       PASSER D'UN NOM/PRENOM A UN ID                                               
-            if data[len(data) - 3].upper() == ConcD:                                                                #       |
-                data[len(data) - 3] = b[c][0]                                                                       #       |
-                IsFound = True                                                                                      #       |
-        if not IsFound:                                                                                             #       |
-            print("Ce réalisateur n'est pas présent dans la table, vous allez être redirigé vers le programme d'ajout de réalisateur")
-            curseur.close()                                                                                         # Pour éviter un conflit de lecture
-            connexion.commit()
-            connexion.close()
-            print(req, data)
-            data[len(data) - 3] = add_realisateur()
+    if not TableExist("nationalite"):
+        curseur.close()
+        connexion.commit()
+        connexion.close()
+        return 1
 
-connexion = sqlite3.connect(database)
-curseur = connexion.cursor()
+    if not TableExist("genre"):
+        curseur.close()
+        connexion.commit()
+        connexion.close()
+        return 1
 
-print(data)
-input()
-curseur.execute(req, data)
+    if not TableExist("realisateur"):
+        curseur.close()
+        connexion.commit()
+        connexion.close()
+        return 1
+
+    curseur.execute('SELECT * FROM nationalite')
+    a = curseur.fetchall()
+    temp = ''
+    for i in a:
+        temp = temp + i[1] + ", "
+    req = 'INSERT INTO film (titre_film, annee_film, id_realisateur_film, id_nationalite_film, id_genre_film) VALUES (?, ?, ?, ?, ?)'
+    data = []
+    a = ["Entrez le titre du film : ", "Entrez l'année de sortie du film : ", "Entrez le Nom Prenom du réalisateur : ", "Entrez la nationalité du film ($) : ", "Entrez le genre du film : "]
+    for i in range(len(a)):
+        a[i] = a[i].replace('$', temp[:-2])                      # On remplace le '$' de la chaine a par toutes les nationalités contenues dans la table
+    for i in range (len(a)):
+        data.append(str(input(a[i])))
+        if i == len(a) - 1:
+            curseur.execute('SELECT * FROM nationalite')                                                                #       |
+            b = curseur.fetchall()                                                                                      #       |
+            IsFound = False                                                                                             #       |
+            for c in range(len(b)):                                                                                     #       |
+                if data[len(data) - 2].upper() == b[c][1]:                                                              #       |
+                    data[len(data) - 2] = b[c][0]                                                                       #       PASSER D'UNE NATIONALITE A UN ID
+                    IsFound = True                                                                                      #       |
+                    break                                                                                               #       |
+            if not IsFound:                                                                                             #       |
+                curseur.execute("INSERT INTO nationalite (nom_nationalite) VALUES ('{}')".format(data[len(data) - 2]))  #       |
+                print("Cette nationalité n'était pas dans la table, elle a donc été ajoutée")                           #       |
 
         
 
+            curseur.execute('SELECT * FROM genre')                                                                      #       |
+            b = curseur.fetchall()                                                                                      #       |
+            IsFound = False                                                                                             #       |
+            for c in range(len(b)):                                                                                     #       |
+                if data[len(data) - 1].upper() == b[c][1]:                                                              #       PASSER D'UN
+                    data[len(data) - 1] = b[c][0]                                                                       #       GENRE A UN ID
+                    IsFound = True                                                                                      #       |
+            if not IsFound:                                                                                             #       |
+                curseur.execute("INSERT INTO genre (nom_genre) VALUES ('{}')".format(data[len(data) - 1]))              #       |
+                print("Ce genre n'était pas dans la table, il a donc été ajouté")                                       #       |
+                data[len(data) - 1] = b[len(b) - 1][0]
 
-curseur.close()
-connexion.commit()
-connexion.close()
+
+
+            curseur.execute("SELECT id_realisateur, nom_realisateur, prenom_realisateur FROM realisateur")              #       |
+            b = curseur.fetchall()                                                                                      #       |
+            IsFound = False                                                                                             #       |
+            for c in range(len(b)):                                                                                     #       |
+                ConcD = b[c][1] + b[c][2]                                                                               #       PASSER D'UN NOM/PRENOM A UN ID                                               
+                if data[len(data) - 3].upper() == ConcD:                                                                #       |
+                    data[len(data) - 3] = b[c][0]                                                                       #       |
+                    IsFound = True                                                                                      #       |
+            if not IsFound:                                                                                             #       |
+                print("Ce réalisateur n'est pas présent dans la table, vous allez être redirigé vers le programme d'ajout de réalisateur")
+                curseur.close()                                                                                         # Pour éviter un conflit de lecture
+                connexion.commit()
+                connexion.close()
+                print(req, data)
+                data[len(data) - 3] = add_realisateur()
+
+    connexion = sqlite3.connect(database)
+    curseur = connexion.cursor()
+    curseur.execute(req, data)
+    curseur.close()
+    connexion.commit()
+    connexion.close()
