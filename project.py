@@ -1,6 +1,12 @@
 import sqlite3
 database = "Film_realisateur_genre_nationalite.db"
  
+def CloseAll(cur, con):
+    cur.close()
+    con.commit()
+    con.close()
+
+
 def TableExist(table):
     connexion = sqlite3.connect(database)
     curseur = connexion.cursor()
@@ -25,9 +31,7 @@ def TableExist(table):
                 print(req)
         boool = False
 
-    curseur.close()
-    connexion.commit()
-    connexion.close()
+    CloseAll(curseur, connexion)
     return boool
 
 
@@ -35,15 +39,11 @@ def add_realisateur():
     connexion = sqlite3.connect(database)
     curseur = connexion.cursor()
     if not TableExist("nationalite"):
-        curseur.close()
-        connexion.commit()
-        connexion.close()
+        CloseAll(curseur, connexion)
         return 1
     
     if not TableExist("realisateur"):
-        curseur.close()
-        connexion.commit()
-        connexion.close()
+        CloseAll(curseur, connexion)
         return 1
  
     req = 'INSERT INTO realisateur (nom_realisateur, prenom_realisateur, ddn_realisateur, id_nationalite_realisateur) VALUES (?, ?, ?, ?)'
@@ -71,14 +71,10 @@ def add_realisateur():
                 curseur.execute("INSERT INTO nationalite (nom_nationalite) VALUES ('{}')".format(data[len(a) - 1]))     # Créer une nouvelle nationalité sachant que data[len(a) - 1] contient la nationalité entree par l'utilisateur
                 data[len(a) - 1] = len(t) + 1
 
-    print(req, data)
-    input()
     curseur.execute(req, data)
     curseur.execute("SELECT * FROM realisateur")
     temp = curseur.fetchall()
-    curseur.close()
-    connexion.commit()
-    connexion.close()
+    CloseAll(curseur, connexion)
     return temp[len(temp) - 1][0]
 
 
@@ -89,27 +85,19 @@ def add_film():
     curseur = connexion.cursor()
 
     if not TableExist("film"):
-        curseur.close()
-        connexion.commit()
-        connexion.close()
+        CloseAll(curseur, connexion)
         return 1
 
     if not TableExist("nationalite"):
-        curseur.close()
-        connexion.commit()
-        connexion.close()
+        CloseAll(curseur, connexion)
         return 1
 
     if not TableExist("genre"):
-        curseur.close()
-        connexion.commit()
-        connexion.close()
+        CloseAll(curseur, connexion)
         return 1
 
     if not TableExist("realisateur"):
-        curseur.close()
-        connexion.commit()
-        connexion.close()
+        CloseAll(curseur, connexion)
         return 1
 
     curseur.execute('SELECT * FROM nationalite')
@@ -163,17 +151,11 @@ def add_film():
                     IsFound = True                                                                                      #       |
             if not IsFound:                                                                                             #       |
                 print("Ce réalisateur n'est pas présent dans la table, vous allez être redirigé vers le programme d'ajout de réalisateur")
-                curseur.close()                                                                                         # Pour éviter un conflit de lecture
-                connexion.commit()
-                connexion.close()
+                CloseAll(curseur, connexion)
                 print(req, data)
                 data[len(data) - 3] = add_realisateur()
 
     connexion = sqlite3.connect(database)
     curseur = connexion.cursor()
     curseur.execute(req, data)
-    curseur.close()
-    connexion.commit()
-    connexion.close()
-
-add_realisateur()
+    CloseAll(curseur, connexion)
