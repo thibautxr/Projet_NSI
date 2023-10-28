@@ -1,6 +1,15 @@
 import sqlite3
 database = "Film_realisateur_genre_nationalite.db"
- 
+print("tapez help(main) pour avoir une explication rapide de chaque fonction")
+
+def main():
+    '''
+    CloseAll()          : ferme simplement une connexion à une base de donnée, fonction créée pour gagner de la place et avoir un code plus simple à comprendre
+    TableExist()        : Permet de savoir si une table existe, évite d'avoir une fatal error dans la console qui ferait crash le programme
+    AddRealisateur()    : Ajoute une entrée dans la table Realisateur si elle existe
+    AddFilm()           : Ajoute une entrée dans la table film si elle existe
+    '''
+
 def CloseAll(cur, con):
     cur.close()
     con.commit()
@@ -35,7 +44,7 @@ def TableExist(table):
     return boool
 
 
-def add_realisateur():
+def AddRealisateur():
     connexion = sqlite3.connect(database)
     curseur = connexion.cursor()
     if not TableExist("nationalite"):
@@ -80,7 +89,7 @@ def add_realisateur():
 
 
 # Composition de la table film : id_film, titre_film, annee_film, id_realisateur_film, id_nationalite_film, id_genre_film
-def add_film():
+def AddFilm():
     connexion = sqlite3.connect(database)
     curseur = connexion.cursor()
 
@@ -153,9 +162,11 @@ def add_film():
                 print("Ce réalisateur n'est pas présent dans la table, vous allez être redirigé vers le programme d'ajout de réalisateur")
                 CloseAll(curseur, connexion)
                 print(req, data)
-                data[len(data) - 3] = add_realisateur()
+                data[len(data) - 3] = AddRealisateur()
 
     connexion = sqlite3.connect(database)
     curseur = connexion.cursor()
     curseur.execute(req, data)
     CloseAll(curseur, connexion)
+
+help(main)
