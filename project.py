@@ -63,7 +63,6 @@ def add_realisateur():
             if not IsFound:                                 # Si la nationalite n'est pas dans la table    
                 curseur.execute("INSERT INTO nationalite (nom_nationalite) VALUES ('{}')".format(data[len(a) - 1]))     # Créer une nouvelle nationalité sachant que data[len(a) - 1] contient la nationalité entree par l'utilisateur
 
-    input()
     curseur.execute(req, data)
     curseur.execute("SELECT * FROM realisateur")
     temp = curseur.fetchall()
@@ -78,12 +77,6 @@ def add_realisateur():
 def add_film():
     connexion = sqlite3.connect(database)
     curseur = connexion.cursor()
-
-    curseur.execute("SELECT * FROM film")
-    row = curseur.fetchall()
-    for rows in row:
-        print(rows)
-
 
     if not TableExist("film"):
         curseur.close()
