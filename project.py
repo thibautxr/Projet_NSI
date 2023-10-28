@@ -1,3 +1,5 @@
+#TO FIX : DANS add_realisateur LA NATIONALITE EST PAS INSEREE EN ID MAIS DIRECTEMENT EN CHAINE
+
 import sqlite3
 database = "Film_realisateur_genre_nationalite.db"
  
