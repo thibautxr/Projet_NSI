@@ -163,16 +163,5 @@ def AddFilm():
                 CloseAll(curseur, connexion)
                 data[len(data) - 3] = AddRealisateur()
 
-    connexion = sqlite3.connect(database)
-    curseur = connexion.cursor()
-    print(data, req)
-    input()
     curseur.execute(req, data)
     CloseAll(curseur, connexion)
-
-connexion = sqlite3.connect(database)
-curseur = connexion.cursor()
-curseur.execute("SELECT * FROM genre")
-print(curseur.fetchall())
-CloseAll(curseur, connexion)
-AddFilm()
