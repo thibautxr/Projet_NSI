@@ -133,20 +133,20 @@ def AddFilm():
             if not IsFound:                                                                                             #       |
                 curseur.execute("INSERT INTO nationalite (nom_nationalite) VALUES ('{}')".format(data[len(data) - 2]))  #       |
                 print("Cette nationalité n'était pas dans la table, elle a donc été ajoutée")                           #       |
-
+                data[len(data) - 2] = b[len(b) - 1][0] + 1
         
 
             curseur.execute('SELECT * FROM genre')                                                                      #       |
             b = curseur.fetchall()                                                                                      #       |
             IsFound = False                                                                                             #       |
             for c in range(len(b)):                                                                                     #       |
-                if data[len(data) - 1].upper() == b[c][1]:                                                              #       PASSER D'UN
+                if data[len(data) - 1].lower() == b[c][1].lower():                                                      #       PASSER D'UN
                     data[len(data) - 1] = b[c][0]                                                                       #       GENRE A UN ID
                     IsFound = True                                                                                      #       |
             if not IsFound:                                                                                             #       |
                 curseur.execute("INSERT INTO genre (nom_genre) VALUES ('{}')".format(data[len(data) - 1]))              #       |
                 print("Ce genre n'était pas dans la table, il a donc été ajouté")                                       #       |
-                data[len(data) - 1] = b[len(b) - 1][0]
+                data[len(data) - 1] = b[len(b) - 1][0] + 1
 
 
 
@@ -154,19 +154,25 @@ def AddFilm():
             b = curseur.fetchall()                                                                                      #       |
             IsFound = False                                                                                             #       |
             for c in range(len(b)):                                                                                     #       |
-                ConcD = b[c][1] + b[c][2]                                                                               #       PASSER D'UN NOM/PRENOM A UN ID                                               
-                if data[len(data) - 3].upper() == ConcD:                                                                #       |
+                ConcD = b[c][1] + ' ' + b[c][2]                                                                         #       PASSER D'UN NOM/PRENOM A UN ID                                               
+                if data[len(data) - 3].lower() == ConcD.lower():                                                        #       |
                     data[len(data) - 3] = b[c][0]                                                                       #       |
                     IsFound = True                                                                                      #       |
             if not IsFound:                                                                                             #       |
                 print("Ce réalisateur n'est pas présent dans la table, vous allez être redirigé vers le programme d'ajout de réalisateur")
                 CloseAll(curseur, connexion)
-                print(req, data)
                 data[len(data) - 3] = AddRealisateur()
 
     connexion = sqlite3.connect(database)
     curseur = connexion.cursor()
+    print(data, req)
+    input()
     curseur.execute(req, data)
     CloseAll(curseur, connexion)
 
-help(main)
+connexion = sqlite3.connect(database)
+curseur = connexion.cursor()
+curseur.execute("SELECT * FROM genre")
+print(curseur.fetchall())
+CloseAll(curseur, connexion)
+AddFilm()
