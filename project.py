@@ -1,4 +1,5 @@
 import sqlite3
+from time import *
 database = "Film_realisateur_genre_nationalite.db"
 print("tapez help(main) pour avoir une explication rapide de chaque fonction")
 
@@ -133,6 +134,7 @@ def AddFilm():
             if not IsFound:                                                                                             #       |
                 curseur.execute("INSERT INTO nationalite (nom_nationalite) VALUES ('{}')".format(data[len(data) - 2]))  #       |
                 print("Cette nationalité n'était pas dans la table, elle a donc été ajoutée")                           #       |
+                sleep(0.5)
                 data[len(data) - 2] = b[len(b) - 1][0] + 1
         
 
@@ -146,6 +148,7 @@ def AddFilm():
             if not IsFound:                                                                                             #       |
                 curseur.execute("INSERT INTO genre (nom_genre) VALUES ('{}')".format(data[len(data) - 1]))              #       |
                 print("Ce genre n'était pas dans la table, il a donc été ajouté")                                       #       |
+                sleep(0.5)
                 data[len(data) - 1] = b[len(b) - 1][0] + 1
 
 
@@ -160,6 +163,7 @@ def AddFilm():
                     IsFound = True                                                                                      #       |
             if not IsFound:                                                                                             #       |
                 print("Ce réalisateur n'est pas présent dans la table, vous allez être redirigé vers le programme d'ajout de réalisateur")
+                sleep(0.5)
                 CloseAll(curseur, connexion)
                 data[len(data) - 3] = AddRealisateur()
 
