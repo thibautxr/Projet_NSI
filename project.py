@@ -11,6 +11,7 @@ def main():
     TableExist()        : Permet de savoir si une table existe, évite d'avoir une fatal error dans la console qui ferait crash le programme
     AddRealisateur()    : Ajoute une entrée dans la table Realisateur si elle existe
     AddFilm()           : Ajoute une entrée dans la table film si elle existe
+    AddActeur()         : Ajoute une entrée à la table acteur
     TableActeur()       : Crée les tables xacteurfilm et acteur
     '''
 
@@ -64,28 +65,33 @@ def AddRealisateur():
     curseur.execute('SELECT * FROM nationalite')
     t = curseur.fetchall()
     temp = ''
+    
     for i in t:
         temp = temp + i[1] + ", "
     a = ['Entrez le nom du réalisateur : ', 'Entrez le prénom du réalisateur : ', 'Entrez la ddn du réalisateur (aaaa-mm-jj) : ', 'Entrez la nationalité du realisateur ($) : '] #liste de tous les prompts affichés à l'écran
     for i in range(len(a)):
         a[i] = a[i].replace('$', temp[:-2])
-    for i in range(len(a)):                                 # Pour afficher tous les prompt du tableau a[]
-        data.append(str(input(a[i])))                       # Ici on ajoute toutes les réponses de l'utilisateur au tableau data[] qui remplaceront les '?' de la requête VALUES (?, ?, ?, ?)
-        if i == len(a) - 1:                                 # Quand on a completé tous les champs
+    for i in range(len(a)):                                                                                             # Pour afficher tous les prompt du tableau a[]
+        data.append(str(input(a[i])))                                                                                   # Ici on ajoute toutes les réponses de l'utilisateur au tableau data[] qui remplaceront les '?' de la requête VALUES (?, ?, ?, ?)
+        if i == len(a) - 1:                                                                                             # Quand on a completé tous les champs
+            Exist = False
             curseur.execute('SELECT * FROM nationalite')
-            b = curseur.fetchall()                          # La variable contient les valeurs de la table nationalité, elle est sous la forme : [[id, nationalite], [id, nationalite], ...]
+            b = curseur.fetchall()                  # La variable contient les valeurs de la table nationalité, elle est sous la forme : [[id, nationalite], [id, nationalite], ...]
             IsFound = False
             for c in range(len(b)):
-                if data[len(a) - 1].upper() == b[c][1]:     # Si la fin du tableau data[], qui contient la nationalité, est identique à l'une des valeurs de la table nationalité (le tableau ressemble à [id, nationalite], [id, nationalite], ...)
-                    data[len(a) - 1] = b[c][0]              # Alors on affecte à la fin du tableau l'id de la nationalite indiquée par l'utilisateur
+                if data[0].lower() + ' ' + data[1].lower() == b[c][1].lower() + ' ' + b[c][2].lower():                  # Si le nom prenom entré (en minuscule) est égal à l'un présent dans la table
+                    print("Ce réalisateur existe déjà dans la table, son id est {}".format(b[c][0]))
+                    Exist = True
+                if data[len(a) - 1].upper() == b[c][1]:                                                                 # Si la fin du tableau data[], qui contient la nationalité, est identique à l'une des valeurs de la table nationalité (le tableau ressemble à [id, nationalite], [id, nationalite], ...)
+                    data[len(a) - 1] = b[c][0]                                                                          # Alors on affecte à la fin du tableau l'id de la nationalite indiquée par l'utilisateur
                     IsFound = True
                     break
-            if not IsFound:                                 # Si la nationalite n'est pas dans la table    
+            if not IsFound:                                                                                             # Si la nationalite n'est pas dans la table    
                 curseur.execute("INSERT INTO nationalite (nom_nationalite) VALUES ('{}')".format(data[len(a) - 1]))     # Créer une nouvelle nationalité sachant que data[len(a) - 1] contient la nationalité entree par l'utilisateur
                 data[len(a) - 1] = len(t) + 1
-
-    curseur.execute(req, data)
-    curseur.execute("SELECT * FROM realisateur")
+    if not Exist:
+        curseur.execute(req, data)
+        curseur.execute("SELECT * FROM realisateur")
     temp = curseur.fetchall()
     CloseAll(curseur, connexion)
     return temp[len(temp) - 1][0]
@@ -155,7 +161,6 @@ def AddFilm():
                 data[len(data) - 1] = b[len(b) - 1][0] + 1
 
 
-
             curseur.execute("SELECT id_realisateur, nom_realisateur, prenom_realisateur FROM realisateur")              #       |
             b = curseur.fetchall()                                                                                      #       |
             IsFound = False                                                                                             #       |
@@ -177,7 +182,44 @@ def AddFilm():
 def TableActeur():
     connexion = sqlite3.connect(database)
     curseur = connexion.cursor()
-    curseur.execute("CREATE TABLE acteur (id_acteur INTEGER UNIQUE NOT NULL  PRIMARY KEY AUTOINCREMENT, nom_acteur TEXT NOT NULL, prenom_acteur TEXT NOT NULL)")
-    curseur.execute("CREATE TABLE xacteurfilm (id_xaf INTEGER UNIQUE NOT NULL  PRIMARY KEY AUTOINCREMENT, id_acteur_xaf INTEGER NOT NULL, id_film_xaf INTEGER NOT NULL, FOREIGN KEY(id_acteur_xaf) REFERENCES film (id_film) FOREIGN KEY(id_film_xaf) REFERENCES acteur (id_acteur))")
+    curseur.execute("CREATE TABLE acteur (id_acteur INTEGER UNIQUE NOT NULL PRIMARY KEY AUTOINCREMENT, nom_acteur TEXT NOT NULL, prenom_acteur TEXT NOT NULL)")
+    curseur.execute("CREATE TABLE xacteurfilm (id_xaf INTEGER UNIQUE NOT NULL PRIMARY KEY AUTOINCREMENT, id_acteur_xaf INTEGER NOT NULL, id_film_xaf INTEGER NOT NULL, FOREIGN KEY(id_acteur_xaf) REFERENCES film (id_film) FOREIGN KEY(id_film_xaf) REFERENCES acteur (id_acteur))")
     CloseAll(curseur, connexion)
 
+
+def AddActeur():
+    connexion = sqlite3.connect(database)
+    curseur = connexion.cursor()
+
+    try:
+        curseur.execute("SELECT * FROM acteur")
+
+    except sqlite3.OperationalError:
+        TableActeur()
+
+    if not TableExist("xacteurfilm"):
+        CloseAll(curseur, connexion)
+        #return 1
+
+    req = 'INSERT INTO acteur (nom_acteur, prenom_acteur) VALUES (?, ?)'
+    data = []
+    a = ["Entrez le Nom de l'acteur : ", "Entrez le prénom de l'acteur : "]
+    for i in range (len(a)):
+        data.append(str(input(a[i])))
+        if i == len(a) - 1:
+            # Vérifier si l'entrée n'existe pas déjà
+            Exists = False
+            curseur.execute("SELECT * FROM acteur")
+            b = curseur.fetchall()
+            print(b)
+            for i in range(len(b)):
+                if data[0].lower() + ' ' + data[1].lower() == b[i][1].lower() + ' ' + b[i][2].lower():          # Si le nom prenom entré (en minuscule) est égal à l'un présent dans la table
+                    print("Cet acteur existe déjà dans la table, son id est {}".format(b[i][0]))
+                    Exists = True
+            
+            if not Exists:
+                print(req, data)
+                input()
+                curseur.execute(req, data)
+
+    CloseAll(curseur, connexion)
