@@ -1,3 +1,5 @@
+# Faire une meilleure gestion des erreurs
+
 import sqlite3
 from time import *
 database = "Film_realisateur_genre_nationalite.db"
@@ -5,10 +7,11 @@ print("tapez help(main) pour avoir une explication rapide de chaque fonction")
 
 def main():
     '''
-    CloseAll()          : ferme simplement une connexion à une base de donnée, fonction créée pour gagner de la place et avoir un code plus simple à comprendre
+    CloseAll()          : Ferme simplement une connexion à une base de donnée, fonction créée pour gagner de la place et avoir un code plus simple à comprendre
     TableExist()        : Permet de savoir si une table existe, évite d'avoir une fatal error dans la console qui ferait crash le programme
     AddRealisateur()    : Ajoute une entrée dans la table Realisateur si elle existe
     AddFilm()           : Ajoute une entrée dans la table film si elle existe
+    TableActeur()       : Crée les tables xacteurfilm et acteur
     '''
 
 def CloseAll(cur, con):
@@ -169,3 +172,12 @@ def AddFilm():
 
     curseur.execute(req, data)
     CloseAll(curseur, connexion)
+
+
+def TableActeur():
+    connexion = sqlite3.connect(database)
+    curseur = connexion.cursor()
+    curseur.execute("CREATE TABLE acteur (id_acteur INTEGER UNIQUE NOT NULL  PRIMARY KEY AUTOINCREMENT, nom_acteur TEXT NOT NULL, prenom_acteur TEXT NOT NULL)")
+    curseur.execute("CREATE TABLE xacteurfilm (id_xaf INTEGER UNIQUE NOT NULL  PRIMARY KEY AUTOINCREMENT, id_acteur_xaf INTEGER NOT NULL, id_film_xaf INTEGER NOT NULL, FOREIGN KEY(id_acteur_xaf) REFERENCES film (id_film) FOREIGN KEY(id_film_xaf) REFERENCES acteur (id_acteur))")
+    CloseAll(curseur, connexion)
+
