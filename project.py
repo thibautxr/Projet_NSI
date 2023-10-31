@@ -1,3 +1,5 @@
+# Ajouter de la sécurité, commenter le code, améliorer les graphismes (optionnel), améliorer les textes
+
 from PyQt5.QtWidgets import *           # EN FIN DE PROJET REMPLACER LE * PAR LES FONCTIONS UTILISEES POUR OPTIMISER
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap
@@ -73,6 +75,43 @@ def ReturnAllTable():
 
 
 
+
+
+def TableActeur():
+    connexion = sqlite3.connect(database)
+    curseur = connexion.cursor()
+    curseur.execute("CREATE TABLE acteur (id_acteur INTEGER UNIQUE NOT NULL PRIMARY KEY AUTOINCREMENT, nom_acteur TEXT NOT NULL, prenom_acteur TEXT NOT NULL)")
+    curseur.execute("CREATE TABLE xacteurfilm (id_xaf INTEGER UNIQUE NOT NULL PRIMARY KEY AUTOINCREMENT, id_acteur_xaf INTEGER NOT NULL, id_film_xaf INTEGER NOT NULL, FOREIGN KEY(id_acteur_xaf) REFERENCES film (id_film) FOREIGN KEY(id_film_xaf) REFERENCES acteur (id_acteur))")
+    CloseAll(curseur, connexion)
+
+
+
+
+
+
+def AddActeur(self):
+    self.layout = QVBoxLayout()
+    self.layout.addWidget(QLabel("Veuillez ajouter un Acteur à la table Acteur"), alignment=Qt.AlignCenter)
+    self.NomLabel = QLabel("Nom de l'acteur :")
+    self.NomActeurLine = QLineEdit("Texier")
+    self.PrenomLabel = QLabel("Prenom de l'acteur :")
+    self.PrenomActeurLine = QLineEdit("Thibaut")
+    self.ConfirmButton = QPushButton("Insérer")
+    self.ConfirmButton.clicked.connect(self.ConfirmedActeur)
+    self.layout.addWidget(self.NomLabel, alignment=Qt.AlignCenter)
+    self.layout.addWidget(self.NomActeurLine, alignment=Qt.AlignCenter)
+    self.layout.addWidget(self.PrenomLabel, alignment=Qt.AlignCenter)
+    self.layout.addWidget(self.PrenomActeurLine, alignment=Qt.AlignCenter)
+    self.layout.addWidget(self.ConfirmButton, alignment=Qt.AlignCenter)
+
+
+
+
+
+
+
+
+
 def AddRealisateur(self):
     self.connexion = sqlite3.connect(database)
     self.curseur = self.connexion.cursor()
@@ -84,7 +123,6 @@ def AddRealisateur(self):
     temp = ''
     for i in t:
         temp = temp + i[1] + ", "
-    self.WelcomeLabel = QLabel("Veuillez ajouter un Réalisateur à la table Realisateur")
     self.layout = QVBoxLayout()
     self.layout.addWidget(QLabel("Veuillez ajouter un Réalisateur à la table Realisateur"), alignment=Qt.AlignCenter)
     self.NomLabel = QLabel("Nom du réalisateur :")
@@ -107,6 +145,14 @@ def AddRealisateur(self):
     self.layout.addWidget(self.NationaliteLabel, alignment=Qt.AlignCenter)
     self.layout.addWidget(self.NationaliteRealisateurLine, alignment=Qt.AlignCenter)
     self.layout.addWidget(self.ConfirmButton, alignment=Qt.AlignCenter)
+
+
+
+
+
+
+
+
 
 # Composition de la table film : id_film, titre_film, annee_film, id_realisateur_film, id_nationalite_film, id_genre_film
 def AddFilm(self):
@@ -131,7 +177,6 @@ def AddFilm(self):
     temp = ''
     for i in t:
         temp = temp + i[1] + ", "
-    self.WelcomeLabel = QLabel("Veuillez ajouter un Réalisateur à la table Realisateur")
     self.layout = QVBoxLayout()
     self.layout.addWidget(QLabel("Veuillez ajouter un Film à la table film"), alignment=Qt.AlignCenter)
     self.TitreLabel = QLabel("Titre du film :")
@@ -160,59 +205,7 @@ def AddFilm(self):
     self.layout.addWidget(self.ConfirmButton, alignment=Qt.AlignCenter)
 
 
-def TableActeur():
-    connexion = sqlite3.connect(database)
-    curseur = connexion.cursor()
-    curseur.execute("CREATE TABLE acteur (id_acteur INTEGER UNIQUE NOT NULL PRIMARY KEY AUTOINCREMENT, nom_acteur TEXT NOT NULL, prenom_acteur TEXT NOT NULL)")
-    curseur.execute("CREATE TABLE xacteurfilm (id_xaf INTEGER UNIQUE NOT NULL PRIMARY KEY AUTOINCREMENT, id_acteur_xaf INTEGER NOT NULL, id_film_xaf INTEGER NOT NULL, FOREIGN KEY(id_acteur_xaf) REFERENCES film (id_film) FOREIGN KEY(id_film_xaf) REFERENCES acteur (id_acteur))")
-    CloseAll(curseur, connexion)
 
-
-def AddActeur():
-    connexion = sqlite3.connect(database)
-    curseur = connexion.cursor()
-
-    try:
-        curseur.execute("SELECT * FROM acteur")
-
-    except sqlite3.OperationalError:
-        TableActeur()
-
-    if not TableExist("xacteurfilm"):
-        CloseAll(curseur, connexion)
-        #return 1
-
-    req = 'INSERT INTO acteur (nom_acteur, prenom_acteur) VALUES (?, ?)'
-    data = []
-    a = ["Entrez le Nom de l'acteur : ", "Entrez le prénom de l'acteur : "]
-    for i in range (len(a)):
-        data.append(str(input(a[i])))
-        if i == len(a) - 1:
-            # Vérifier si l'entrée n'existe pas déjà
-            Exists = False
-            curseur.execute("SELECT * FROM acteur")
-            b = curseur.fetchall()
-            print(b)
-            for i in range(len(b)):
-                if data[0].lower() + ' ' + data[1].lower() == b[i][1].lower() + ' ' + b[i][2].lower():          # Si le nom prenom entré (en minuscule) est égal à l'un présent dans la table
-                    print("Cet acteur existe déjà dans la table, son id est {}".format(b[i][0]))
-                    Exists = True
-            
-            if not Exists:
-                print(req, data)
-                input()
-                curseur.execute(req, data)
-
-    CloseAll(curseur, connexion)
-
-
-
-
-
-
-
-
-    
 
 
 
@@ -241,7 +234,7 @@ class Window(QWidget):
 
     def BoutonAppuye(self):
         sender = self.sender()
-        if sender.text().lower() == "realisateur" or sender.text().lower() == "film":
+        if sender.text().lower() == "realisateur" or sender.text().lower() == "film" or sender.text().lower() == "acteur":
             self.win = OtherWindow("Projet NSI", 450, 800, sender.text().lower())
             self.close()
             self.win.show()
@@ -249,7 +242,7 @@ class Window(QWidget):
             TableActeur()
             self.ActeurWasJustCreated = True
             self.close()
-        elif sender.text().lower() == "genre" or sender.text().lower() == "nationalite" or "acteur" or sender.text().lower() == "xacteurfilm":
+        elif sender.text().lower() == "genre" or sender.text().lower() == "nationalite" or sender.text().lower() == "xacteurfilm":
             self.win = LastWindow("Contenu de la table {}".format(sender.text().lower()), self.X, self.Y, sender.text().lower())
             self.close()
             self.win.show()
@@ -258,8 +251,6 @@ class Window(QWidget):
             self.win = OtherWindow("Projet NSI", round(self.X / 3), round(self.Y / 3), "Lorem ipsum dolor sit amet")
             self.close()
             self.win.show()
-
-
 
 
 
@@ -283,7 +274,14 @@ class OtherWindow(QWidget):
         elif Bouton == "film":
             AddFilm(self)
 
+        elif Bouton == "acteur":
+            AddActeur(self)
+
         self.setLayout(self.layout)
+
+
+
+
 
 
     def ConfirmedReal(self):
@@ -324,6 +322,9 @@ class OtherWindow(QWidget):
         self.close()
         self.w.show()
     
+
+
+
 
 
 
@@ -408,29 +409,38 @@ class OtherWindow(QWidget):
 
 
 
-class LastWindow(QWidget):
-    def __init__(self, Title: str, X: int, Y: int, Table: str):
-        super().__init__()
-        self.setWindowTitle(Title)
-        self.resize(Y, X)
-        self.layout = QVBoxLayout()
-        self.label = QLabel("Contenu de la table {}".format(Table))
-        self.label.setStyleSheet("color: red; font-size: 23px")
-        self.layout.addWidget(self.label, alignment= Qt.AlignCenter)
+
+
+    def ConfirmedActeur(self):
         self.connexion = sqlite3.connect(database)
         self.curseur = self.connexion.cursor()
-        self.curseur.execute("SELECT * FROM {}".format(Table))
-        temp = self.curseur.fetchall()
-        RealContent = []
-        for i in temp:
-            RealContent.append(i)
-        for i in range(len(RealContent)):
-            a = QLabel(str(RealContent[i]))
-            a.setStyleSheet("font-weight: 600; word-spacing: 10px;")
-            self.layout.addWidget(a, alignment=Qt.AlignCenter)
-        self.setLayout(self.layout)
-        
+        req = 'INSERT INTO acteur (nom_acteur, prenom_acteur) VALUES (?, ?)'
+        data = [self.NomActeurLine.text(), self.PrenomActeurLine.text()]
+        # Vérifier si l'entrée n'existe pas déjà
+        Exists = False
+        self.curseur.execute("SELECT * FROM acteur")
+        b = self.curseur.fetchall()
+        print(b)
+        for i in range(len(b)):
+            if data[0].lower() + ' ' + data[1].lower() == b[i][1].lower() + ' ' + b[i][2].lower():          # Si le nom prenom entré (en minuscule) est égal à l'un présent dans la table
+                print("Cet acteur existe déjà dans la table, son id est {}".format(b[i][0]))
+                Exists = True
+        if not Exists:
+            print(req, data)
+            self.curseur.execute(req, data)
+
         CloseAll(self.curseur, self.connexion)
+        self.w = LastWindow("Contenu de la table acteur", self.X, self.Y, "acteur")
+        self.close()
+        self.w.show()
+
+
+
+
+
+
+
+
 
 
     def ConfirmedReal(self):
@@ -473,6 +483,50 @@ class LastWindow(QWidget):
         self.w.show()
 
 
+
+
+class LastWindow(QWidget):
+    def __init__(self, Title: str, X: int, Y: int, Table: str):
+        super().__init__()
+        self.setWindowTitle(Title)
+        self.resize(Y, X)
+        self.layout = QVBoxLayout()
+        self.label = QLabel("Contenu de la table {}".format(Table))
+        self.label.setStyleSheet("color: red; font-size: 23px")
+        self.layout.addWidget(self.label, alignment= Qt.AlignCenter)
+        self.connexion = sqlite3.connect(database)
+        self.curseur = self.connexion.cursor()
+        self.curseur.execute("SELECT * FROM {}".format(Table))
+        temp = self.curseur.fetchall()
+        RealContent = []
+        for i in temp:
+            RealContent.append(i)
+        for i in range(len(RealContent)):
+            a = QLabel(str(RealContent[i]))
+            a.setStyleSheet("font-weight: 600; word-spacing: 10px;")
+            self.layout.addWidget(a, alignment=Qt.AlignCenter)
+        self.setLayout(self.layout)
+        
+        CloseAll(self.curseur, self.connexion)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 class EmergencyWindow(QWidget):
     def __init__(self):
         super().__init__()
@@ -485,6 +539,25 @@ class EmergencyWindow(QWidget):
         self.setLayout(self.layout)
         self.raise_()
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 '''
 connexion = sqlite3.connect(database)
 curseur = connexion.cursor()
@@ -495,6 +568,10 @@ print(curseur.fetchall())
 CloseAll(curseur, connexion)
 input()
 '''
+
+
+
+
 
 app = QApplication.instance() 
 if not app:
@@ -511,27 +588,6 @@ if win.ActeurWasJustCreated:
     win2 = Window("Projet NSI", 450, 800)
     win2.show()
     app2.exec()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
