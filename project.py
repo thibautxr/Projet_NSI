@@ -219,8 +219,10 @@ def AddActeur():
 class Window(QWidget):
     def __init__(self, Title: str, X: int, Y: int):
         super().__init__()
+        self.X, self.Y = X, Y
         self.setWindowTitle(Title)
         self.resize(Y, X)
+        self.ActeurWasJustCreated = False 
         self.l = ReturnAllTable()
         self.lc = ReturnAllTable()
         self.layout = QVBoxLayout()
@@ -228,22 +230,39 @@ class Window(QWidget):
             self.l[i] = QPushButton(self.l[i].capitalize())
             self.layout.addWidget(self.l[i])
             self.l[i].clicked.connect(self.BoutonAppuye)
-        self.a = QPushButton("salut")
-        self.layout.addWidget(self.a)
-        self.a.clicked.connect(self.BoutonAppuye)
+        if len(self.l) == 4:
+            self.a = QPushButton("Creer les tables Acteur et XacteurFilm")
+            self.layout.addWidget(self.a)
+            self.a.clicked.connect(self.BoutonAppuye)
+           
+        
         
         self.setLayout(self.layout)
 
     def BoutonAppuye(self):
         sender = self.sender()
-        if sender.text().lower() == "realisateur" or sender.text().lower() == "film" or sender.text().lower() == "genre" or sender.text().lower() == "nationalite" or sender.text().lower() == "acteur" or sender.text().lower() == "xacteurfilm":
+        if sender.text().lower() == "realisateur" or sender.text().lower() == "film":
             self.win = OtherWindow("Projet NSI", 450, 800, sender.text().lower())
             self.close()
             self.win.show()
-        else:
-            self.win = OtherWindow("Projet NSI", round(450 / 3), round(800 / 3), "Lorem ipsum dolor sit amet")
+        elif sender.text().lower() == "Creer les tables Acteur et XacteurFilm".lower():
+            TableActeur()
+            self.ActeurWasJustCreated = True
+            self.close()
+        elif sender.text().lower() == "genre" or sender.text().lower() == "nationalite" or "acteur" or sender.text().lower() == "xacteurfilm":
+            self.win = LastWindow("Contenu de la table {}".format(sender.text().lower()), self.X, self.Y, sender.text().lower())
             self.close()
             self.win.show()
+        
+        else:
+            self.win = OtherWindow("Projet NSI", round(self.X / 3), round(self.Y / 3), "Lorem ipsum dolor sit amet")
+            self.close()
+            self.win.show()
+
+
+
+
+
 
 
 
@@ -253,43 +272,16 @@ class OtherWindow(QWidget):
         self.setWindowTitle(Title)
         self.Y, self.X = Y, X
         self.resize(self.Y, self.X)
-        layout = QVBoxLayout()
+        self.layout = QVBoxLayout()
         if Bouton == "Lorem ipsum dolor sit amet":
             self.label = QLabel("Cette Table n'a pas été configurée")
-            layout.addWidget(self.label, alignment=Qt.AlignCenter)
+            self.layout.addWidget(self.label, alignment=Qt.AlignCenter)
 
         elif Bouton == "realisateur":
             AddRealisateur(self)
             
-
-
         elif Bouton == "film":
             AddFilm(self)
-
-        
-        elif Bouton == "genre":
-            self.label = QLabel(Bouton)
-            self.layout.addWidget(self.label, alignment=Qt.AlignCenter)
-        
-        
-        
-        elif Bouton == "nationalite":
-            self.label = QLabel(Bouton)
-            self.layout.addWidget(self.label, alignment=Qt.AlignCenter)
-        
-        
-        
-        elif Bouton == "acteur":
-            self.label = QLabel(Bouton)
-            self.layout.addWidget(self.label, alignment=Qt.AlignCenter)
-        
-        
-        
-        elif Bouton == "xacteurfilm":
-            self.label = QLabel(Bouton)
-            self.layout.addWidget(self.label, alignment=Qt.AlignCenter)
-        
-
 
         self.setLayout(self.layout)
 
@@ -421,11 +413,10 @@ class LastWindow(QWidget):
         super().__init__()
         self.setWindowTitle(Title)
         self.resize(Y, X)
-        layout = QVBoxLayout()
-
+        self.layout = QVBoxLayout()
         self.label = QLabel("Contenu de la table {}".format(Table))
         self.label.setStyleSheet("color: red; font-size: 23px")
-        layout.addWidget(self.label, alignment= Qt.AlignCenter)
+        self.layout.addWidget(self.label, alignment= Qt.AlignCenter)
         self.connexion = sqlite3.connect(database)
         self.curseur = self.connexion.cursor()
         self.curseur.execute("SELECT * FROM {}".format(Table))
@@ -436,23 +427,11 @@ class LastWindow(QWidget):
         for i in range(len(RealContent)):
             a = QLabel(str(RealContent[i]))
             a.setStyleSheet("font-weight: 600; word-spacing: 10px;")
-            layout.addWidget(a, alignment=Qt.AlignCenter)
-        self.setLayout(layout)
+            self.layout.addWidget(a, alignment=Qt.AlignCenter)
+        self.setLayout(self.layout)
         
         CloseAll(self.curseur, self.connexion)
 
-
-class EmergencyWindow(QWidget):
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle("Ajout Realisateur")
-        self.Y = 800
-        self.X = 450
-        self.resize(450, 800)
-        self.layout = QVBoxLayout()
-        AddRealisateur(self)
-        self.setLayout(self.layout)
-        self.raise_()
 
     def ConfirmedReal(self):
         self.connexion = sqlite3.connect(database)
@@ -493,6 +472,19 @@ class EmergencyWindow(QWidget):
         self.close()
         self.w.show()
 
+
+class EmergencyWindow(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Ajout Realisateur")
+        self.Y = 800
+        self.X = 450
+        self.resize(450, 800)
+        self.layout = QVBoxLayout()
+        AddRealisateur(self)
+        self.setLayout(self.layout)
+        self.raise_()
+
 '''
 connexion = sqlite3.connect(database)
 curseur = connexion.cursor()
@@ -508,10 +500,17 @@ app = QApplication.instance()
 if not app:
     app = QApplication(sys.argv)
 win = Window("Projet NSI", 450, 800)
-
 win.show()
 app.exec()
-
+app2 = QApplication.instance() 
+if not app2:
+    app2 = QApplication(sys.argv)
+print(win.ActeurWasJustCreated)
+if win.ActeurWasJustCreated:
+    win.close()
+    win2 = Window("Projet NSI", 450, 800)
+    win2.show()
+    app2.exec()
 
 
 
