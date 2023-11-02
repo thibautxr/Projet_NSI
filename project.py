@@ -98,9 +98,9 @@ def AddActeur(self):
     self.layout = QVBoxLayout()
     self.layout.addWidget(self.WelcomeLabel, alignment=Qt.AlignCenter)
     self.NomLabel = QLabel("Nom de l'acteur :")
-    self.NomActeurLine = QLineEdit("Texier")
+    self.NomActeurLine = QLineEdit("Bergèse")
     self.PrenomLabel = QLabel("Prenom de l'acteur :")
-    self.PrenomActeurLine = QLineEdit("Thibaut")
+    self.PrenomActeurLine = QLineEdit("Jerôme")
     self.ConfirmButton = QPushButton("Insérer")
 
     self.NomLabel.setStyleSheet("color: white; font-size: 13px")  
@@ -282,13 +282,14 @@ def AddLink(self):
     for i in range(len(t)):
         self.temp.append([t[i][0], t[i][1] + ' ' + t[i][2]])
     self.curseur.execute("SELECT * FROM film ORDER BY titre_film")
-    print("Requpête : SELECT * FROM film ORDER BY titre_film")
+    print("Requête : SELECT * FROM film ORDER BY titre_film")
     t = self.curseur.fetchall()
     self.TabTitreFilm = []
     for i in range(len(t)):
         self.TabTitreFilm.append([t[i][0], t[i][1]])
     self.MenuFilm = QComboBox()
     self.MenuActeur = QComboBox()
+    self.MenuFilm.setStyleSheet("height: 150px; width: 200px;")
     self.ItemTitreFilm = []
     for i in range(len(self.TabTitreFilm)):
         self.ItemTitreFilm.append(' ')
@@ -320,23 +321,38 @@ def AddLink(self):
     self.TitreLabel = QLabel("Titre du film :")
     self.ActeurLabel = QLabel("Nom Prenom de l'Acteur :")
     self.ConfirmButton = QPushButton("Relier")
-    CloseAll(self.curseur, self.connexion)
+       # ça casse les couilles ya des trucs qui marchent pas, genre les boutons avec les bords arrondis, cette ligne de code elle sert à rien à par ce commentaire où c'est juste moi qui me plaint de cette librairie de MERDE
 
     self.TitreLabel.setStyleSheet("color: white; font-size: 13px")
     self.ConfirmButton.setStyleSheet("color: white; font-size: 13px")
     self.ActeurLabel.setStyleSheet("color: white; font-size: 13px")
     self.MenuActeur.setStyleSheet("color: white; font-size: 11px") 
-    self.MenuFilm.setStyleSheet("color: white; font-size: 11px") 
+    self.MenuFilm.setStyleSheet("color: white; font-size: 11px")
 
-    self.ConfirmButton.clicked.connect(self.ConfirmedXacteurFilm)
+    
+
     self.layout.addWidget(self.TitreLabel, alignment=Qt.AlignCenter)
     self.layout.addWidget(self.MenuFilm, alignment=Qt.AlignCenter)
     self.layout.addWidget(self.ActeurLabel, alignment=Qt.AlignCenter)
     self.layout.addWidget(self.MenuActeur, alignment=Qt.AlignCenter)
-    self.layout.addWidget(QLabel())
+    self.curseur.execute("PRAGMA table_info(xacteurfilm)")
+    if len(self.curseur.fetchall()) <= 3:
+        self.AddPersonnage = QPushButton("Ajouter un Attribut \"Personnage\"")
+        self.AddPersonnage.setStyleSheet("color: white; font-size: 11px")
+        self.AddPersonnage.clicked.connect(self.AddPersonnageXacteurFilm)
+        self.layout.addWidget(self.AddPersonnage, alignment=Qt.AlignCenter)
+        self.PersonnageExists = False
+    else:
+        self.XacteurFilmPersonnage = QLineEdit("Eliott Alderson")
+        self.XacteurFilmPersonnage.setStyleSheet("color: white; font-size: 11px")
+        self.layout.addWidget(self.XacteurFilmPersonnage, alignment=Qt.AlignCenter)
+        self.PersonnageExists = True
+    self.ConfirmButton.clicked.connect(self.ConfirmedXacteurFilm)
     self.layout.addWidget(self.ConfirmButton, alignment=Qt.AlignCenter)
     self.layout.addWidget(QLabel())
     self.layout.addWidget(QLabel())
+
+    CloseAll(self.curseur, self.connexion)
     return 0
 
 
@@ -501,7 +517,6 @@ class OtherWindow(QWidget):
         IsFound = False                                                                                                         #       |
         for c in range(len(b)):                                                                                                 #       |
             ConcD = b[c][1] + ' ' + b[c][2]                                                                                     #      PASSER D'UN NOM/PRENOM A UN ID                                               
-            print(data)
             if not IsFound and data[len(data) - 3].lower() == ConcD.lower():                                                                    #       |
                 data[len(data) - 3] = b[c][0]                                                                                   #       |
                 IsFound = True                                                                                                  #       |
@@ -555,18 +570,42 @@ class OtherWindow(QWidget):
         FilmId = self.MenuFilm.itemData(FilmIndex)
         self.connexion = sqlite3.connect(database)
         self.curseur = self.connexion.cursor()
-        self.curseur.execute("SELECT id_acteur_xaf, id_film_xaf FROM xacteurfilm WHERE id_acteur_xaf = {} AND id_film_xaf = {}".format(ActeurId, FilmId))
-        if self.curseur.fetchall() == []:
-            self.curseur.execute("INSERT INTO xacteurfilm (id_acteur_xaf, id_film_xaf) VALUES ({}, {})".format(ActeurId, FilmId))
-            CloseAll(self.curseur, self.connexion)
-            self.w = LastWindow("Contenu de la table xacteurfilm", self.X, self.Y, "xacteurfilm")
-            self.close()
-            self.w.show()
-        else:
-            print("Cet acteur a déjà été lié à ce film")
-            CloseAll(self.curseur, self.connexion)
-        
-     
+        if not self.PersonnageExists:
+            self.curseur.execute("SELECT id_acteur_xaf, id_film_xaf FROM xacteurfilm WHERE id_acteur_xaf = {} AND id_film_xaf = {}".format(ActeurId, FilmId))
+            if self.curseur.fetchall() == []:
+                self.curseur.execute("INSERT INTO xacteurfilm (id_acteur_xaf, id_film_xaf) VALUES ({}, {})".format(ActeurId, FilmId))
+                CloseAll(self.curseur, self.connexion)
+                self.w = LastWindow("Contenu de la table xacteurfilm", self.X, self.Y, "xacteurfilm")
+                self.close()
+                self.w.show()
+            else:
+                print("Cet acteur a déjà été lié à ce film")
+                CloseAll(self.curseur, self.connexion)
+        if self.PersonnageExists:
+            self.curseur.execute("SELECT id_acteur_xaf, id_film_xaf, personnage_xaf FROM xacteurfilm WHERE id_acteur_xaf = {} AND id_film_xaf = {} AND personnage_xaf = '{}'".format(ActeurId, FilmId, self.XacteurFilmPersonnage.text()))
+            if self.curseur.fetchall() == []:
+                self.curseur.execute("INSERT INTO xacteurfilm (id_acteur_xaf, id_film_xaf, personnage_xaf) VALUES ({}, {}, '{}')".format(ActeurId, FilmId, self.XacteurFilmPersonnage.text()))
+                CloseAll(self.curseur, self.connexion)
+                self.w = LastWindow("Contenu de la table xacteurfilm", self.X, self.Y, "xacteurfilm")
+                self.close()
+                self.w.show()
+            else:
+                print("Cet acteur a déjà été lié à ce film")
+                CloseAll(self.curseur, self.connexion)
+
+
+
+
+
+
+
+    def AddPersonnageXacteurFilm(self):
+        self.connexion = sqlite3.connect(database)
+        self.curseur = self.connexion.cursor()
+        self.curseur.execute("ALTER TABLE xacteurfilm ADD personnage_xaf TEXT(64)")
+        CloseAll(self.curseur, self.connexion)
+        self.ActeurWasJustCreated = True                                            # Permet de relancer le programme une seconde fois après la création des tables
+        self.close()
 
 
 
@@ -582,7 +621,6 @@ class OtherWindow(QWidget):
         Exists = False
         self.curseur.execute("SELECT * FROM acteur")
         b = self.curseur.fetchall()
-        print(b)
         for i in range(len(b)):
             if data[0].lower() + ' ' + data[1].lower() == b[i][1].lower() + ' ' + b[i][2].lower():          # Si le nom prenom entré (en minuscule) est égal à l'un présent dans la table
                 print("Cet acteur existe déjà dans la table, son id est {}".format(b[i][0]))
@@ -595,16 +633,6 @@ class OtherWindow(QWidget):
         self.w = LastWindow("Contenu de la table acteur", self.X, self.Y, "acteur")
         self.close()
         self.w.show()
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -675,8 +703,10 @@ class EmergencyWindow(QWidget):                                                 
         self.resize(450, 800)
         self.layout = QVBoxLayout() 
         if EmergencyId == 0:
+            self.setWindowTitle("Ajout Realisateur")
             AddRealisateur(self, NomReal, PrenomReal, DdnReal, NatioReal)
         elif EmergencyId == 1:
+            self.setWindowTitle("Ajout Acteur")
             AddActeur(self)
         self.setLayout(self.layout)
         
@@ -686,7 +716,6 @@ class EmergencyWindow(QWidget):                                                 
         self.curseur = self.connexion.cursor()
         req = 'INSERT INTO realisateur (nom_realisateur, prenom_realisateur, ddn_realisateur, id_nationalite_realisateur) VALUES (?, ?, ?, ?)'
         data = [self.NomRealisateurLine.text(), self.PrenomRealisateurLine.text(), self.DdnRealisateurLine.text()]
-        print(data)
         self.curseur.execute('SELECT * FROM nationalite')
         print("Requête : SELECT * FROM nationalite")
         b = self.curseur.fetchall()
@@ -711,7 +740,6 @@ class EmergencyWindow(QWidget):                                                 
             print("Requête : INSERT INTO nationalite (nom_nationalite) VALUES ('{}')".format(self.NationaliteRealisateurLine.text().upper()))
             data.append(len(b) + 1)
         if not Exist:
-            print(data)
             self.curseur.execute(req, data)
             print("Requête : INSERT INTO realisateur (nom_realisateur, prenom_realisateur, ddn_realisateur, id_nationalite_realisateur) VALUES ('{}', '{}', {}, {})".format(data[0], data[1], data[2], data[3]))
         CloseAll(self.curseur, self.connexion)
@@ -728,7 +756,6 @@ class EmergencyWindow(QWidget):                                                 
         Exists = False
         self.curseur.execute("SELECT * FROM acteur")
         b = self.curseur.fetchall()
-        print(b)
         for i in range(len(b)):
             if data[0].lower() + ' ' + data[1].lower() == b[i][1].lower() + ' ' + b[i][2].lower():          # Si le nom prenom entré (en minuscule) est égal à l'un présent dans la table
                 print("Cet acteur existe déjà dans la table, son id est {}".format(b[i][0]))
@@ -777,7 +804,6 @@ if not app:
 
 
 
-
 win = Window("Projet NSI", 450, 800)
 win.show()
 app.exec()
@@ -789,7 +815,14 @@ if win.ActeurWasJustCreated:
     win2 = Window("Projet NSI", 450, 800)
     win2.show()
     app2.exec()
-
+    app3 = QApplication.instance() 
+    if not app3:
+        app3 = QApplication(sys.argv)
+    if win2.ActeurWasJustCreated:
+        win.close()
+        win3 = OtherWindow("Projet NSI", 450, 800, "xacteurfilm")
+        win3.show()
+        app3.exec()
 
 
 
