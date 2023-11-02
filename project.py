@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import *           # EN FIN DE PROJET REMPLACER LE * PAR LES FONCTIONS UTILISEES POUR OPTIMISER
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QStandardItemModel, QStandardItem
 import sys
 import sqlite3
 from time import *
@@ -123,12 +124,13 @@ def AddActeur(self):
 
 def AddRealisateur(self, NomReal = "Texier", PrenomReal = "Thibaut", DndReal = "2006-05-06", NatioReal = "FR"):
     self.setStyleSheet("background-color: #17181a")
-    self.connexion = sqlite3.connect(database)
-    self.curseur = self.connexion.cursor()
     if not TableExist("nationalite"):
         self.WelcomeLabel = QLabel("Impossible de trouver la table nationalite, relancez le programme après avoir résolu le problème")
         CloseAll(self.curseur, self.connexion)
         return "nationalite"
+    
+    self.connexion = sqlite3.connect(database)
+    self.curseur = self.connexion.cursor()
     self.curseur.execute("SELECT nom_nationalite FROM nationalite")     
     print("Requête : SELECT nom_nationalite FROM nationalite")                          #
     t = self.curseur.fetchall()                                                         #   on récupère le nom des nationalités et on en fait une
@@ -185,8 +187,6 @@ def AddRealisateur(self, NomReal = "Texier", PrenomReal = "Thibaut", DndReal = "
 # Composition de la table film : id_film, titre_film, annee_film, id_realisateur_film, id_nationalite_film, id_genre_film
 def AddFilm(self):
     self.setStyleSheet("background-color: #17181a")
-    self.connexion = sqlite3.connect(database)
-    self.curseur = self.connexion.cursor()
     if not TableExist("nationalite"):
         self.WelcomeLabel = QLabel("Impossible de trouver la table nationalite, relancez le programme après avoir résolu le problème")
         CloseAll(self.curseur, self.connexion)
@@ -200,6 +200,8 @@ def AddFilm(self):
         CloseAll(self.curseur, self.connexion)
         return "realisateur"                                                    #
     
+    self.connexion = sqlite3.connect(database)
+    self.curseur = self.connexion.cursor()
     self.curseur.execute("SELECT nom_nationalite FROM nationalite")
     print("Requête : SELECT nom_nationalite FROM nationalite")
     t = self.curseur.fetchall()
@@ -253,6 +255,93 @@ def AddFilm(self):
 
 
 
+
+def AddLink(self):
+    self.setStyleSheet("background-color: #17181a")
+    if not TableExist("acteur"):
+        self.WelcomeLabel = QLabel("Impossible de trouver la table acteur, relancez le programme après avoir résolu le problème")
+        CloseAll(self.curseur, self.connexion)
+        return "acteur"
+    if not TableExist("film"):
+        self.WelcomeLabel = QLabel("Impossible de trouver la table film, relancez le programme après avoir résolu le problème")
+        CloseAll(self.curseur, self.connexion)
+        return "film"
+    
+    self.connexion = sqlite3.connect(database)
+    self.curseur = self.connexion.cursor()
+    self.curseur.execute("SELECT * FROM acteur")
+    print("Requête : SELECT * FROM acteur")
+    t = self.curseur.fetchall()
+    if t == []:
+        CloseAll(self.curseur, self.connexion)
+        print("Il n'y a pas d'acteur dans la table acteur, Redirection vers le programme d'ajout d'acteur")
+        self.EWin = EmergencyWindow(1)
+        self.EWin.show()
+        return "xacteurfilm"
+    self.temp = []
+    for i in range(len(t)):
+        self.temp.append([t[i][0], t[i][1] + ' ' + t[i][2]])
+    self.curseur.execute("SELECT * FROM film ORDER BY titre_film")
+    print("Requpête : SELECT * FROM film ORDER BY titre_film")
+    t = self.curseur.fetchall()
+    self.TabTitreFilm = []
+    for i in range(len(t)):
+        self.TabTitreFilm.append([t[i][0], t[i][1]])
+    self.MenuFilm = QComboBox()
+    self.MenuActeur = QComboBox()
+    self.ItemTitreFilm = []
+    for i in range(len(self.TabTitreFilm)):
+        self.ItemTitreFilm.append(' ')
+    self.ItemActeur = []
+    for i in range(len(self.temp)):
+        self.ItemActeur.append(' ')
+    print(len(self.TabTitreFilm))
+    self.ModelTitre = QStandardItemModel()
+    self.ModelActeur = QStandardItemModel()
+
+    for i in range(len(self.TabTitreFilm)):
+        self.ItemTitreFilm[i] = QStandardItem(t[i][1])
+        self.ItemTitreFilm[i].setData(t[i][0], role=Qt.UserRole)
+        self.ModelTitre.appendRow(self.ItemTitreFilm[i])
+
+    for i in range(len(self.ItemActeur)):
+        self.ItemActeur[i] = QStandardItem(self.temp[i][1])
+        self.ItemActeur[i].setData(self.temp[i][0], role=Qt.UserRole)
+        self.ModelActeur.appendRow(self.ItemActeur[i])
+
+    
+    
+    self.WelcomeLabel = QLabel("Veuillez lier un acteur à un film")
+    self.WelcomeLabel.setStyleSheet("color: red; font-size: 23px")
+    self.layout = QVBoxLayout()
+    self.layout.addWidget(self.WelcomeLabel, alignment=Qt.AlignCenter)
+    self.MenuFilm.setModel(self.ModelTitre)
+    self.MenuActeur.setModel(self.ModelActeur)
+    self.TitreLabel = QLabel("Titre du film :")
+    self.ActeurLabel = QLabel("Nom Prenom de l'Acteur :")
+    self.ConfirmButton = QPushButton("Relier")
+    CloseAll(self.curseur, self.connexion)
+
+    self.TitreLabel.setStyleSheet("color: white; font-size: 13px")
+    self.ConfirmButton.setStyleSheet("color: white; font-size: 13px")
+    self.ActeurLabel.setStyleSheet("color: white; font-size: 13px")
+    self.MenuActeur.setStyleSheet("color: white; font-size: 11px") 
+    self.MenuFilm.setStyleSheet("color: white; font-size: 11px") 
+
+    self.ConfirmButton.clicked.connect(self.ConfirmedXacteurFilm)
+    self.layout.addWidget(self.TitreLabel, alignment=Qt.AlignCenter)
+    self.layout.addWidget(self.MenuFilm, alignment=Qt.AlignCenter)
+    self.layout.addWidget(self.ActeurLabel, alignment=Qt.AlignCenter)
+    self.layout.addWidget(self.MenuActeur, alignment=Qt.AlignCenter)
+    self.layout.addWidget(QLabel())
+    self.layout.addWidget(self.ConfirmButton, alignment=Qt.AlignCenter)
+    self.layout.addWidget(QLabel())
+    self.layout.addWidget(QLabel())
+    return 0
+
+
+
+
 class Window(QWidget):
     def __init__(self, Title: str, X: int, Y: int):
         super().__init__()
@@ -278,7 +367,7 @@ class Window(QWidget):
 
     def BoutonAppuye(self):
         sender = self.sender()                                                          # Contient le texte du bouton (putain ce que j'en ai chié pour trouver ça)
-        if sender.text().lower() == "realisateur" or sender.text().lower() == "film" or sender.text().lower() == "acteur":
+        if sender.text().lower() == "realisateur" or sender.text().lower() == "film" or sender.text().lower() == "acteur" or sender.text().lower() == "xacteurfilm":
             self.win = OtherWindow("Projet NSI", self.X, self.Y, sender.text().lower())
             self.close()
             self.win.show()
@@ -286,7 +375,7 @@ class Window(QWidget):
             TableActeur()
             self.ActeurWasJustCreated = True                                            # Permet de relancer le programme une seconde fois après la création des tables
             self.close()
-        elif sender.text().lower() == "genre" or sender.text().lower() == "nationalite" or sender.text().lower() == "xacteurfilm":
+        elif sender.text().lower() == "genre" or sender.text().lower() == "nationalite":
             self.win = LastWindow("Contenu de la table {}".format(sender.text().lower()), self.X, self.Y, sender.text().lower())
             self.close()
             self.win.show()
@@ -313,25 +402,17 @@ class OtherWindow(QWidget):
 
         elif Bouton == "realisateur":
             a = AddRealisateur(self)
-            if a != 0:
-                self.a = QLabel("La table {} n'existe pas".format(a))
-                self.a.setStyleSheet("color: red; font-size: 23px")
-                self.layout.addWidget(self.a, alignment=Qt.AlignCenter)
-
         elif Bouton == "film":
             a = AddFilm(self)
-            if a != 0:
-                self.a = QLabel("La table {} n'existe pas".format(a))
-                self.a.setStyleSheet("color: red; font-size: 23px")
-                self.layout.addWidget(self.a, alignment=Qt.AlignCenter)
-
         elif Bouton == "acteur":
             a = AddActeur(self)
-            if a != 0:
-                self.a = QLabel("La table {} n'existe pas".format(a))
-                self.a.setStyleSheet("color: red; font-size: 23px")
-                self.layout.addWidget(self.a, alignment=Qt.AlignCenter)
+        elif Bouton == "xacteurfilm":
+            a = AddLink(self)
 
+        if a != 0:
+            self.a = QLabel("La table {} est vide ou n'existe pas".format(a))
+            self.a.setStyleSheet("color: red; font-size: 23px")
+            self.layout.addWidget(self.a, alignment=Qt.AlignCenter)
         self.setLayout(self.layout)
 
 
@@ -420,14 +501,15 @@ class OtherWindow(QWidget):
         IsFound = False                                                                                                         #       |
         for c in range(len(b)):                                                                                                 #       |
             ConcD = b[c][1] + ' ' + b[c][2]                                                                                     #      PASSER D'UN NOM/PRENOM A UN ID                                               
-            if data[len(data) - 3].lower() == ConcD.lower():                                                                    #       |
+            print(data)
+            if not IsFound and data[len(data) - 3].lower() == ConcD.lower():                                                                    #       |
                 data[len(data) - 3] = b[c][0]                                                                                   #       |
                 IsFound = True                                                                                                  #       |
         if not IsFound:                                                                                                         #       |
             print("Ce réalisateur n'est pas présent dans la table, vous allez être redirigé vers le programme d'ajout de réalisateur")
             CloseAll(self.curseur, self.connexion)
             NomPrenom = self.RealisateurFilmLine.text().split(" ")
-            self.EWin = EmergencyWindow(NomPrenom[0], NomPrenom[1])
+            self.EWin = EmergencyWindow(0, NomPrenom[0], NomPrenom[1])
             self.EWin.show()
             self.connexion = sqlite3.connect(database)
             self.curseur = self.connexion.cursor()
@@ -464,6 +546,26 @@ class OtherWindow(QWidget):
         self.w = LastWindow("Contenu de la table film", self.X, self.Y, "film")
         self.close()
         self.w.show()
+
+
+    def ConfirmedXacteurFilm(self):
+        ActeurIndex = self.MenuActeur.currentIndex()
+        ActeurId = self.MenuActeur.itemData(ActeurIndex)
+        FilmIndex = self.MenuFilm.currentIndex()
+        FilmId = self.MenuFilm.itemData(FilmIndex)
+        self.connexion = sqlite3.connect(database)
+        self.curseur = self.connexion.cursor()
+        self.curseur.execute("SELECT id_acteur_xaf, id_film_xaf FROM xacteurfilm WHERE id_acteur_xaf = {} AND id_film_xaf = {}".format(ActeurId, FilmId))
+        if self.curseur.fetchall() == []:
+            self.curseur.execute("INSERT INTO xacteurfilm (id_acteur_xaf, id_film_xaf) VALUES ({}, {})".format(ActeurId, FilmId))
+            CloseAll(self.curseur, self.connexion)
+            self.w = LastWindow("Contenu de la table xacteurfilm", self.X, self.Y, "xacteurfilm")
+            self.close()
+            self.w.show()
+        else:
+            print("Cet acteur a déjà été lié à ce film")
+            CloseAll(self.curseur, self.connexion)
+        
      
 
 
@@ -565,14 +667,17 @@ class LastWindow(QWidget):
 
 
 class EmergencyWindow(QWidget):                                                             # Comme son nom l'indique, elle sert que quand c'est le zbeul, genre quand il faut ajouter un Réalisateur en urgence
-    def __init__(self, NomReal: str, PrenomReal: str, DdnReal: str = "2006-05-06", NatioReal: str = "FR"):
+    def __init__(self, EmergencyId: int = 0, NomReal: str = "Texier", PrenomReal: str = "Thibaut", DdnReal: str = "2006-05-06", NatioReal: str = "FR"):
         super().__init__()
         self.setWindowTitle("Ajout Realisateur")
         self.Y = 800
         self.X = 450
         self.resize(450, 800)
         self.layout = QVBoxLayout() 
-        AddRealisateur(self, NomReal, PrenomReal, DdnReal, NatioReal)
+        if EmergencyId == 0:
+            AddRealisateur(self, NomReal, PrenomReal, DdnReal, NatioReal)
+        elif EmergencyId == 1:
+            AddActeur(self)
         self.setLayout(self.layout)
         
 
@@ -611,6 +716,30 @@ class EmergencyWindow(QWidget):                                                 
             print("Requête : INSERT INTO realisateur (nom_realisateur, prenom_realisateur, ddn_realisateur, id_nationalite_realisateur) VALUES ('{}', '{}', {}, {})".format(data[0], data[1], data[2], data[3]))
         CloseAll(self.curseur, self.connexion)
         self.close()
+
+
+
+    def ConfirmedActeur(self):
+        self.connexion = sqlite3.connect(database)
+        self.curseur = self.connexion.cursor()
+        req = 'INSERT INTO acteur (nom_acteur, prenom_acteur) VALUES (?, ?)'
+        data = [self.NomActeurLine.text(), self.PrenomActeurLine.text()]
+        # Vérifier si l'entrée n'existe pas déjà
+        Exists = False
+        self.curseur.execute("SELECT * FROM acteur")
+        b = self.curseur.fetchall()
+        print(b)
+        for i in range(len(b)):
+            if data[0].lower() + ' ' + data[1].lower() == b[i][1].lower() + ' ' + b[i][2].lower():          # Si le nom prenom entré (en minuscule) est égal à l'un présent dans la table
+                print("Cet acteur existe déjà dans la table, son id est {}".format(b[i][0]))
+                Exists = True
+        if not Exists:
+            print(req, data)
+            self.curseur.execute(req, data)
+
+        CloseAll(self.curseur, self.connexion)
+        self.close()
+        
 
 
 
