@@ -39,7 +39,7 @@ def ReturnAllTable():
     curseur = connexion.cursor()
 
     curseur.execute("SELECT name FROM sqlite_master WHERE type='table';")               # la table sqlite_master est une table créée dans chaque database SQLite, elle contient notamment
-    print("SELECT name FROM sqlite_master WHERE type='table';")                # le nom de toutes les tables de la database, ce que nous récupérons ici
+    print("SELECT name FROM sqlite_master WHERE type='table';")                         # le nom de toutes les tables de la database, ce que nous récupérons ici
     a = curseur.fetchall()
     l = []
     cas = "(),'"                                                                        # la requête renvoie une chaine un peu bizarre, donc on retire ces caractères pour rendre 
@@ -61,7 +61,7 @@ def ReturnContentTable(table):
     connexion = sqlite3.connect(database)
     curseur = connexion.cursor()
     curseur.execute("PRAGMA table_info({})".format(table))              # la requête PRAGMA table_info(table) retourne les attributs de la table, par exemple [[0, id_film], [1, titre_film], [2, nationalite_film], ...]
-    print("PRAGMA table_info({})".format(table))              # le print est ajouté pour que le programme ne fasse pas "boite noire" et que les actions du programme soient affichées dans le prompt
+    print("PRAGMA table_info({})".format(table))                        # le print est ajouté pour que le programme ne fasse pas "boite noire" et que les actions du programme soient affichées dans le prompt
     ProprieteTable = curseur.fetchall()
     ContentTable = []
     for i in range(len(ProprieteTable)):
@@ -97,7 +97,7 @@ def AddActeur(self):
     self.layout = QVBoxLayout()
     self.layout.addWidget(self.WelcomeLabel, alignment=Qt.AlignCenter)
     self.NomLabel = QLabel("Nom de l'acteur :")
-    self.NomActeurLine = QLineEdit("Bergèse")
+    self.NomActeurLine = QLineEdit("Bergèse")                               # La valeur entrée dans QLineEdit(str) est la valeur par défaut du champ
     self.PrenomLabel = QLabel("Prenom de l'acteur :")
     self.PrenomActeurLine = QLineEdit("Jerôme")
     self.ConfirmButton = QPushButton("Insérer")
@@ -115,7 +115,7 @@ def AddActeur(self):
     self.layout.addWidget(self.PrenomActeurLine, alignment=Qt.AlignCenter)
     self.curseur.execute("PRAGMA table_info(acteur)")
     print("PRAGMA table_info(acteur)")
-    if len(self.curseur.fetchall()) <= 3:
+    if len(self.curseur.fetchall()) <= 3:                                   # Si la table acteur a moins de 4 attributs
         self.AddNationaliteActeur = QPushButton("Ajouter un attribut \"id_nationalite_acteur\"")
         self.AddNationaliteActeur.setStyleSheet(DefaultCSS)
         self.AddNationaliteActeur.clicked.connect(self.AddIdNationaliteActeur)
@@ -152,7 +152,7 @@ def AddRealisateur(self, NomReal = "Texier", PrenomReal = "Thibaut", DndReal = "
     self.connexion = sqlite3.connect(database)
     self.curseur = self.connexion.cursor()
     self.curseur.execute("SELECT nom_nationalite FROM nationalite")     
-    print("SELECT nom_nationalite FROM nationalite")                          #
+    print("SELECT nom_nationalite FROM nationalite")                                    #
     t = self.curseur.fetchall()                                                         #   on récupère le nom des nationalités et on en fait une
     temp = ''                                                                           #   chaine de charactères pour avertir l'utilisateur
     for i in t:                                                                         #   des nationalités existentes et du format qu'elles ont
@@ -291,7 +291,7 @@ def AddLink(self):
     self.curseur.execute("SELECT * FROM acteur")
     print("SELECT * FROM acteur")
     t = self.curseur.fetchall()
-    if t == []:
+    if t == []:                                     # Si la requête ne renvoie rien, mais pas d'erreur sqlite3.OperationError, c'est que la table existe mais est vide
         CloseAll(self.curseur, self.connexion)
         print("\tIl n'y a pas d'acteur dans la table acteur, Redirection vers le programme d'ajout d'acteur")
         self.EWin = EmergencyWindow(1)
@@ -299,30 +299,29 @@ def AddLink(self):
         return "xacteurfilm"
     self.temp = []
     for i in range(len(t)):
-        self.temp.append([t[i][0], t[i][1] + ' ' + t[i][2]])
+        self.temp.append([t[i][0], t[i][1] + ' ' + t[i][2]])                # La structure de temp sera : [[id_acteur, nom_acteur prenom_acteur], [...], ...]
     self.curseur.execute("SELECT * FROM film ORDER BY titre_film")
     print("SELECT * FROM film ORDER BY titre_film")
     t = self.curseur.fetchall()
     self.TabTitreFilm = []
     for i in range(len(t)):
-        self.TabTitreFilm.append([t[i][0], t[i][1]])
-    self.MenuFilm = QComboBox()
+        self.TabTitreFilm.append([t[i][0], t[i][1]])                        # La structure de TabTitreFIlm sera : [[id_film, titre_film], [id_film2, titre_film2], ...]
+    self.MenuFilm = QComboBox()                                             # Création d'une menu déroulant
     self.MenuActeur = QComboBox()
-    self.MenuFilm.setStyleSheet("height: 150px; width: 200px;")
+    self.MenuFilm.setStyleSheet("height: 150px; width: 200px;")             # Ne sert à rien pck ya des putains d'instructions qui fonctionnent pas mais on le garde en place holder au cas ou
     self.ItemTitreFilm = []
-    for i in range(len(self.TabTitreFilm)):
-        self.ItemTitreFilm.append(' ')
+    for i in range(len(self.TabTitreFilm)):                                 # Crée un tableau de la taille du nombre de films, obligé de faire ça car 
+        self.ItemTitreFilm.append(' ')                                          # self.ItemTitreFilm = ['' * len(self.TabTitreFilm)] ne semble pas fonctionner
     self.ItemActeur = []
     for i in range(len(self.temp)):
         self.ItemActeur.append(' ')
-    print(len(self.TabTitreFilm))
-    self.ModelTitre = QStandardItemModel()
-    self.ModelActeur = QStandardItemModel()
+    self.ModelTitre = QStandardItemModel()                                  # Crée un "modèle" de donnée qui stocke en n°1 l'id de l'acteur/film séléctionné et en n°2 le nom/titre de 
+    self.ModelActeur = QStandardItemModel()                                 # Celui ci, on est obligés de faire comme ça au cas ou il y ait 2 titres de film/noms d'acteurs identiques
 
     for i in range(len(self.TabTitreFilm)):
-        self.ItemTitreFilm[i] = QStandardItem(t[i][1])
-        self.ItemTitreFilm[i].setData(t[i][0], role=Qt.UserRole)
-        self.ModelTitre.appendRow(self.ItemTitreFilm[i])
+        self.ItemTitreFilm[i] = QStandardItem(t[i][1])                      # Dans la ligne d'indice i du tableau ItemTitreFilm on dit que le nom de la ligne n°i du menu sera t[i][1]
+        self.ItemTitreFilm[i].setData(t[i][0], role=Qt.UserRole)            # Dans la ligne d'indice i du tableau ItemTitreFilm on dit que l'id de la ligne n°i du menu sera t[i][0]
+        self.ModelTitre.appendRow(self.ItemTitreFilm[i])                    # Je sais pas à quoi sert le role=Qt.USerRole mais ça avait l'air important sur la doc donc je l'ai laissé ça fait pas de mal je pense pas que ça prenne trop de mémoire
 
     for i in range(len(self.ItemActeur)):
         self.ItemActeur[i] = QStandardItem(self.temp[i][1])
@@ -340,14 +339,12 @@ def AddLink(self):
     self.TitreLabel = QLabel("Titre du film :")
     self.ActeurLabel = QLabel("Nom Prenom de l'Acteur :")
     self.ConfirmButton = QPushButton("Relier")
-       # ça casse les couilles ya des trucs qui marchent pas, genre les boutons avec les bords arrondis, cette ligne de code elle sert à rien à par ce commentaire où c'est juste moi qui me plaint de cette librairie de MERDE
 
     self.TitreLabel.setStyleSheet(DefaultCSS)
     self.ConfirmButton.setStyleSheet(DefaultCSS)
     self.ActeurLabel.setStyleSheet(DefaultCSS)
     self.MenuActeur.setStyleSheet("color: white; font-size: 11px") 
     self.MenuFilm.setStyleSheet("color: white; font-size: 11px")
-
     
     self.PersonnageExists = True
     self.layout.addWidget(self.TitreLabel, alignment=Qt.AlignCenter)
@@ -381,7 +378,7 @@ def AddLink(self):
 
 
 
-class FirstWindow(QWidget):
+class FirstWindow(QWidget):                                 # Ne s'ouvre que quand c'est la première ouverture, les fonctions rudimentaires de cette classe ne sont pas documentées
     def __init__(self):
         super().__init__()
         self.setStyleSheet(BackgroundCSS)
@@ -449,6 +446,7 @@ class FirstWindow(QWidget):
     def closeEvent(self, event):
         self.Window = Window("Projet NSI", 450, 800)
         self.Window.show()
+
 
 
 
@@ -578,13 +576,13 @@ class OtherWindow(QWidget):
         b = self.curseur.fetchall()                                                                                             #       |
         IsFound = False                                                                                                         #       |
         for c in range(len(b)):                                                                                                 #       |
-            if data[len(data) - 2].upper() == b[c][1]:                                                                          #       |
-                data[len(data) - 2] = b[c][0]                                                                                   #       PASSER D'UNE NATIONALITE A UN ID
+            if data[len(data) - 2].upper() == b[c][1]:                                                                          #      PASSER D'UNE
+                data[len(data) - 2] = b[c][0]                                                                                   #      NATIONALITE A UN ID
                 IsFound = True                                                                                                  #       |
                 break                                                                                                           #       |
         if not IsFound:                                                                                                         #       |
-            self.curseur.execute("INSERT INTO nationalite (nom_nationalite) VALUES ('{}')".format(data[len(data) - 2]))
-            print("INSERT INTO nationalite (nom_nationalite) VALUES ('{}')".format(data[len(data) - 2]))                        #       |
+            self.curseur.execute("INSERT INTO nationalite (nom_nationalite) VALUES ('{}')".format(data[len(data) - 2]))         #       |
+            print("INSERT INTO nationalite (nom_nationalite) VALUES ('{}')".format(data[len(data) - 2]))                        
             print("\tCette nationalité n'était pas dans la table, elle a donc été ajoutée")
             data[len(data) - 2] = b[len(b) - 1][0] + 1
     
@@ -593,8 +591,8 @@ class OtherWindow(QWidget):
         b = self.curseur.fetchall()                                                                                             #       |
         IsFound = False                                                                                                         #       |
         for c in range(len(b)):                                                                                                 #       |
-            if not IsFound and data[len(data) - 1].lower() == b[c][1].lower():                                                                  #      PASSER D'UN
-                data[len(data) - 1] = b[c][0]                                                                                   #      GENRE A UN ID
+            if not IsFound and data[len(data) - 1].lower() == b[c][1].lower():                                                  #      PASSER D'UN GENRE A UN ID
+                data[len(data) - 1] = b[c][0]                                                                                   #       |
                 IsFound = True                                                                                                  #       |
         if not IsFound:                                                                                                         #       |
             self.curseur.execute("INSERT INTO genre (nom_genre) VALUES ('{}')".format(data[len(data) - 1]))                     #       |
@@ -620,7 +618,7 @@ class OtherWindow(QWidget):
             self.connexion = sqlite3.connect(database)
             self.curseur = self.connexion.cursor()
             self.curseur.execute("SELECT id_realisateur, nom_realisateur, prenom_realisateur FROM realisateur")
-            print("SELECT id_realisateur, nom_realisateur, prenom_realisateur FROM realisateur")                      #       |
+            print("SELECT id_realisateur, nom_realisateur, prenom_realisateur FROM realisateur")                                #       |
             b = self.curseur.fetchall()                                                                                         #       |
             IsFound = False                                                                                                     #       |
             for c in range(len(b)):                                                                                             #       |
@@ -656,11 +654,10 @@ class OtherWindow(QWidget):
         self.w.show()
 
 
+
     def ConfirmedXacteurFilm(self):
-        ActeurIndex = self.MenuActeur.currentIndex()
-        ActeurId = self.MenuActeur.itemData(ActeurIndex)
-        FilmIndex = self.MenuFilm.currentIndex()
-        FilmId = self.MenuFilm.itemData(FilmIndex)
+        ActeurId = self.MenuActeur.itemData(self.MenuActeur.currentIndex())                                     # Récupère l'id de l'acteur séléctionné
+        FilmId = self.MenuFilm.itemData(self.MenuFilm.currentIndex())
         self.connexion = sqlite3.connect(database)
         self.curseur = self.connexion.cursor()
         if not self.PersonnageExists:
@@ -677,10 +674,10 @@ class OtherWindow(QWidget):
                 print("\tCet acteur a déjà été lié à ce film")
                 CloseAll(self.curseur, self.connexion)
         if self.PersonnageExists:
-            self.curseur.execute("SELECT personnage_xaf FROM xacteurfilm WHERE id_acteur_xaf = {} AND id_film_xaf = {}".format(ActeurId, FilmId))
-            print("SELECT personnage_xaf FROM xacteurfilm WHERE id_acteur_xaf = {} AND id_film_xaf = {}".format(ActeurId, FilmId))
+            self.curseur.execute("SELECT personnage_xaf FROM xacteurfilm WHERE id_acteur_xaf = {} AND id_film_xaf = {}".format(ActeurId, FilmId))       # L'interêt de séléctionner le personnage seulement est qu'on peut séparer un retour "None" et un retour vide, afin de 
+            print("SELECT personnage_xaf FROM xacteurfilm WHERE id_acteur_xaf = {} AND id_film_xaf = {}".format(ActeurId, FilmId))                      # savoir si on doit ajouter 3 valeurs ou mettre à jour une ligne existante qui n'a pas encore de valeur "Personnage"
             a = self.curseur.fetchall()
-            if a == []:
+            if a == []:                 # Si la ligne n'existe pas 
                 self.curseur.execute("INSERT INTO xacteurfilm (id_acteur_xaf, id_film_xaf, personnage_xaf) VALUES ({}, {}, '{}')".format(ActeurId, FilmId, self.XacteurFilmPersonnage.text().capitalize()))
                 print("INSERT INTO xacteurfilm (id_acteur_xaf, id_film_xaf, personnage_xaf) VALUES ({}, {}, '{}')".format(ActeurId, FilmId, self.XacteurFilmPersonnage.text().capitalize()))
                 CloseAll(self.curseur, self.connexion)
@@ -688,7 +685,7 @@ class OtherWindow(QWidget):
                 self.close()
                 self.w.show()
             
-            elif a[0][0] == None:
+            elif a[0][0] == None:       # Si la ligne existe MAIS n'a pas encore de valeur "Personnage" ce qui est possible si l'attribut a été ajouté après ajout d'acteurs
                 self.curseur.execute("UPDATE xacteurfilm SET personnage_xaf = '{}' WHERE id_acteur_xaf = {} AND id_film_xaf = {}".format(self.XacteurFilmPersonnage.text().capitalize(), ActeurId, FilmId))
                 print("UPDATE xacteurfilm SET personnage_xaf = '{}' WHERE id_acteur_xaf = {} AND id_film_xaf = {}".format(self.XacteurFilmPersonnage.text().capitalize(), ActeurId, FilmId))
                 CloseAll(self.curseur, self.connexion)
@@ -709,7 +706,6 @@ class OtherWindow(QWidget):
         self.curseur.execute("ALTER TABLE xacteurfilm ADD personnage_xaf TEXT(64)")
         print("ALTER TABLE xacteurfilm ADD personnage_xaf TEXT(64)")
         CloseAll(self.curseur, self.connexion)
-        self.ActeurWasJustCreated = True                                            # Permet de relancer le programme une seconde fois après la création des tables
         self.w = OtherWindow("Choix XacteurFilm", self.X, self.Y, "xacteurfilm", self.Iteration)
         self.close()
         self.w.show()
@@ -725,7 +721,6 @@ class OtherWindow(QWidget):
         if len(self.curseur.fetchall()) <= 3:
             req = 'INSERT INTO acteur (nom_acteur, prenom_acteur) VALUES (?, ?)'
             data = [self.NomActeurLine.text().capitalize(), self.PrenomActeurLine.text().capitalize()]
-            # Vérifier si l'entrée n'existe pas déjà
             Exists = False
             self.curseur.execute("SELECT * FROM acteur")
             print("SELECT * FROM acteur")
@@ -745,7 +740,6 @@ class OtherWindow(QWidget):
         else:
             req = "INSERT INTO acteur (nom_acteur, prenom_acteur, id_nationalite_acteur) VALUES (?, ?, ?)"
             data = [self.NomActeurLine.text().capitalize(), self.PrenomActeurLine.text().capitalize(), self.NationaliteLine.text().upper()]
-            # Vérifier si l'entrée n'existe pas déjà
             Exists = False
             NationaliteExists = False
             self.curseur.execute("SELECT * FROM acteur")
@@ -790,9 +784,9 @@ class OtherWindow(QWidget):
         print("SELECT * FROM oldacteur")
         old = self.curseur.fetchall()
         for i in range (len(old)):
-            self.curseur.execute("INSERT INTO acteur (id_acteur, nom_acteur, prenom_acteur) VALUES ({}, '{}', '{}')".format(old[i][0], old[i][1].capitalize(), old[i][2].capitalize()))
+            self.curseur.execute("INSERT INTO acteur (id_acteur, nom_acteur, prenom_acteur) VALUES ({}, '{}', '{}')".format(old[i][0], old[i][1].capitalize(), old[i][2].capitalize()))     # On copie les valeurs de l'ancienne table acteur vers la nouvelle
             print("INSERT INTO acteur (id_acteur, nom_acteur, prenom_acteur) VALUES ({}, '{}', '{}')".format(old[i][0], old[i][1].capitalize(), old[i][2].capitalize()))
-        self.curseur.execute("DROP TABLE oldacteur")
+        self.curseur.execute("DROP TABLE oldacteur")            # Suppression de l'ancienne table acteur, qui ne sert plus à rien
         print("DROP TABLE oldacteur")
         CloseAll(self.curseur, self.connexion)
         self.close()
@@ -862,6 +856,8 @@ class LastWindow(QWidget):
                 self.setLayout(self.layout)
                 CloseAll(self.curseur, self.connexion)
 
+
+
     def ConfirmedBackToMenu(self):
         self.window = Window("Projet NSI", self.X, self.Y, self.Iteration + 1)
         self.close()
@@ -894,6 +890,7 @@ class EmergencyWindow(QWidget):                                                 
             self.layout.addWidget(self.ErrorLabel, alignment=Qt.AlignCenter)
         self.setLayout(self.layout)
         
+
 
     def ConfirmedReal(self):
         self.connexion = sqlite3.connect(database)
@@ -930,6 +927,7 @@ class EmergencyWindow(QWidget):                                                 
         self.close()
 
 
+
     def ConfirmedActeur(self):
         self.connexion = sqlite3.connect(database)
         self.curseur = self.connexion.cursor()
@@ -950,6 +948,7 @@ class EmergencyWindow(QWidget):                                                 
 
         CloseAll(self.curseur, self.connexion)
         self.close()
+
 
 
     def AddIdNationaliteActeur(self):
@@ -974,13 +973,14 @@ class EmergencyWindow(QWidget):                                                 
 
 
 
+
 app = QApplication.instance() 
 if not app:
     app = QApplication([])
 
 
 with open('settings', 'a+') as fichier:
-    fichier.seek(0)
+    fichier.seek(0)        # fseek(SEEK_SET)
     if fichier.readline() == '':
         fichier.write("FirstLaunchFalse")
         FW = FirstWindow()
