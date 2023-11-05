@@ -88,7 +88,7 @@ def AddActeur(self):
     self.setStyleSheet(BackgroundCSS)
     self.WelcomeLabel.setStyleSheet("color: red; font-size: 23px")
     self.layout = QVBoxLayout()
-    self.layout.addWidget(self.WelcomeLabel, alignment=Qt.AlignCenter)
+    self.layout.addWidget(self.WelcomeLabel                             , alignment=Qt.AlignCenter)
     self.NomLabel = QLabel("Nom de l'acteur :")
     self.NomActeurLine = QLineEdit("Bergèse")                               # La valeur entrée dans QLineEdit(str) est la valeur par défaut du champ
     self.PrenomLabel = QLabel("Prenom de l'acteur :")
@@ -102,17 +102,17 @@ def AddActeur(self):
     self.ConfirmButton.setStyleSheet(DefaultCSS)    
 
     self.ConfirmButton.clicked.connect(self.ConfirmedActeur)
-    self.layout.addWidget(self.NomLabel, alignment=Qt.AlignCenter)
-    self.layout.addWidget(self.NomActeurLine, alignment=Qt.AlignCenter)
-    self.layout.addWidget(self.PrenomLabel, alignment=Qt.AlignCenter)
-    self.layout.addWidget(self.PrenomActeurLine, alignment=Qt.AlignCenter)
+    self.layout.addWidget(self.NomLabel                                 , alignment=Qt.AlignCenter)
+    self.layout.addWidget(self.NomActeurLine                            , alignment=Qt.AlignCenter)
+    self.layout.addWidget(self.PrenomLabel                              , alignment=Qt.AlignCenter)
+    self.layout.addWidget(self.PrenomActeurLine                         , alignment=Qt.AlignCenter)
     self.curseur.execute("PRAGMA table_info(acteur)")
     print("110 \t: PRAGMA table_info(acteur)")
     if len(self.curseur.fetchall()) <= 3:                                   # Si la table acteur a moins de 4 attributs
         self.AddNationaliteActeur = QPushButton("Ajouter un attribut \"id_nationalite_acteur\"")
         self.AddNationaliteActeur.setStyleSheet(DefaultCSS)
         self.AddNationaliteActeur.clicked.connect(self.AddIdNationaliteActeur)
-        self.layout.addWidget(self.AddNationaliteActeur, alignment=Qt.AlignCenter)
+        self.layout.addWidget(self.AddNationaliteActeur                 , alignment=Qt.AlignCenter)
     else:
         self.curseur.execute("SELECT * FROM nationalite")
         print("118 \t: SELECT * FROM nationalite")
@@ -124,10 +124,10 @@ def AddActeur(self):
         self.NationaliteLine = QLineEdit("FR")
         self.NationaliteLabel.setStyleSheet(DefaultCSS)
         self.NationaliteLine.setStyleSheet(DefaultCSS) 
-        self.layout.addWidget(self.NationaliteLabel, alignment=Qt.AlignCenter)
-        self.layout.addWidget(self.NationaliteLine, alignment=Qt.AlignCenter)
-    self.layout.addWidget(self.ConfirmButton, alignment=Qt.AlignCenter)
-    CloseAll(self.curseur, self.connexion)
+        self.layout.addWidget(self.NationaliteLabel                     , alignment=Qt.AlignCenter)
+        self.layout.addWidget(self.NationaliteLine                      , alignment=Qt.AlignCenter)
+    self.layout.addWidget(self.ConfirmButton                            , alignment=Qt.AlignCenter)
+    CloseAll(self.curseur, self.connexion)                              
     return 0
 
 
@@ -149,7 +149,7 @@ def AddRealisateur(self, NomReal = "Texier", PrenomReal = "Thibaut", DndReal = "
     self.WelcomeLabel = QLabel("Veuillez ajouter un réalisateur à la table realisateur")
     self.WelcomeLabel.setStyleSheet("color: red; font-size: 23px")
     self.layout = QVBoxLayout()
-    self.layout.addWidget(self.WelcomeLabel, alignment=Qt.AlignCenter)
+    self.layout.addWidget(self.WelcomeLabel                             , alignment=Qt.AlignCenter)
 
     self.NomLabel = QLabel("Nom du réalisateur :")
     self.NomRealisateurLine = QLineEdit(NomReal)
@@ -173,15 +173,15 @@ def AddRealisateur(self, NomReal = "Texier", PrenomReal = "Thibaut", DndReal = "
 
     CloseAll(self.curseur, self.connexion)
     self.ConfirmButton.clicked.connect(self.ConfirmedReal)
-    self.layout.addWidget(self.NomLabel, alignment=Qt.AlignCenter)
-    self.layout.addWidget(self.NomRealisateurLine, alignment=Qt.AlignCenter)
-    self.layout.addWidget(self.PrenomLabel, alignment=Qt.AlignCenter)
-    self.layout.addWidget(self.PrenomRealisateurLine, alignment=Qt.AlignCenter)
-    self.layout.addWidget(self.DdnLabel, alignment=Qt.AlignCenter)
-    self.layout.addWidget(self.DdnRealisateurLine, alignment=Qt.AlignCenter)
-    self.layout.addWidget(self.NationaliteLabel, alignment=Qt.AlignCenter)
-    self.layout.addWidget(self.NationaliteRealisateurLine, alignment=Qt.AlignCenter)
-    self.layout.addWidget(self.ConfirmButton, alignment=Qt.AlignCenter)
+    self.layout.addWidget(self.NomLabel                                 , alignment=Qt.AlignCenter)
+    self.layout.addWidget(self.NomRealisateurLine                       , alignment=Qt.AlignCenter)
+    self.layout.addWidget(self.PrenomLabel                              , alignment=Qt.AlignCenter)
+    self.layout.addWidget(self.PrenomRealisateurLine                    , alignment=Qt.AlignCenter)
+    self.layout.addWidget(self.DdnLabel                                 , alignment=Qt.AlignCenter)
+    self.layout.addWidget(self.DdnRealisateurLine                       , alignment=Qt.AlignCenter)
+    self.layout.addWidget(self.NationaliteLabel                         , alignment=Qt.AlignCenter)
+    self.layout.addWidget(self.NationaliteRealisateurLine               , alignment=Qt.AlignCenter)
+    self.layout.addWidget(self.ConfirmButton                            , alignment=Qt.AlignCenter)
     return 0
 
 
@@ -238,17 +238,17 @@ def AddFilm(self):
     self.ConfirmButton.setStyleSheet(DefaultCSS)
 
     self.ConfirmButton.clicked.connect(self.ConfirmedFilm)
-    self.layout.addWidget(self.TitreLabel, alignment=Qt.AlignCenter)
-    self.layout.addWidget(self.TitreFilmLine, alignment=Qt.AlignCenter)
-    self.layout.addWidget(self.AnneeLabel, alignment=Qt.AlignCenter)
-    self.layout.addWidget(self.AnneeFilmLine, alignment=Qt.AlignCenter)
-    self.layout.addWidget(self.RealisateurLabel, alignment=Qt.AlignCenter)
-    self.layout.addWidget(self.RealisateurFilmLine, alignment=Qt.AlignCenter)
-    self.layout.addWidget(self.NationaliteLabel, alignment=Qt.AlignCenter)
-    self.layout.addWidget(self.NationaliteFilmLine, alignment=Qt.AlignCenter)
-    self.layout.addWidget(self.GenreLabel, alignment=Qt.AlignCenter)
-    self.layout.addWidget(self.GenreFilmLine, alignment=Qt.AlignCenter)
-    self.layout.addWidget(self.ConfirmButton, alignment=Qt.AlignCenter)
+    self.layout.addWidget(self.TitreLabel                               , alignment=Qt.AlignCenter)
+    self.layout.addWidget(self.TitreFilmLine                            , alignment=Qt.AlignCenter)
+    self.layout.addWidget(self.AnneeLabel                               , alignment=Qt.AlignCenter)
+    self.layout.addWidget(self.AnneeFilmLine                            , alignment=Qt.AlignCenter)
+    self.layout.addWidget(self.RealisateurLabel                         , alignment=Qt.AlignCenter)
+    self.layout.addWidget(self.RealisateurFilmLine                      , alignment=Qt.AlignCenter)
+    self.layout.addWidget(self.NationaliteLabel                         , alignment=Qt.AlignCenter)
+    self.layout.addWidget(self.NationaliteFilmLine                      , alignment=Qt.AlignCenter)
+    self.layout.addWidget(self.GenreLabel                               , alignment=Qt.AlignCenter)
+    self.layout.addWidget(self.GenreFilmLine                            , alignment=Qt.AlignCenter)
+    self.layout.addWidget(self.ConfirmButton                            , alignment=Qt.AlignCenter)
     return 0
 
 
@@ -322,25 +322,25 @@ def AddLink(self):
     self.MenuFilm.setStyleSheet("color: white; font-size: 11px")
     
     self.PersonnageExists = True
-    self.layout.addWidget(self.TitreLabel, alignment=Qt.AlignCenter)
-    self.layout.addWidget(self.MenuFilm, alignment=Qt.AlignCenter)
-    self.layout.addWidget(self.ActeurLabel, alignment=Qt.AlignCenter)
-    self.layout.addWidget(self.MenuActeur, alignment=Qt.AlignCenter)
+    self.layout.addWidget(self.TitreLabel                       , alignment=Qt.AlignCenter)
+    self.layout.addWidget(self.MenuFilm                         , alignment=Qt.AlignCenter)
+    self.layout.addWidget(self.ActeurLabel                      , alignment=Qt.AlignCenter)
+    self.layout.addWidget(self.MenuActeur                       , alignment=Qt.AlignCenter)
     self.curseur.execute("PRAGMA table_info(xacteurfilm)")
     print("330 \t: PRAGMA table_info(xacteurfilm)")
     if len(self.curseur.fetchall()) <= 3:
         self.AddPersonnage = QPushButton("Ajouter un Attribut \"Personnage\"")
         self.AddPersonnage.setStyleSheet("color: white; font-size: 11px")
         self.AddPersonnage.clicked.connect(self.AddPersonnageXacteurFilm)
-        self.layout.addWidget(self.AddPersonnage, alignment=Qt.AlignCenter)
+        self.layout.addWidget(self.AddPersonnage                , alignment=Qt.AlignCenter)
         self.PersonnageExists = False
     else:
         self.XacteurFilmPersonnage = QLineEdit("Eliott Alderson")
         self.XacteurFilmPersonnage.setStyleSheet("color: white; font-size: 11px")
-        self.layout.addWidget(self.XacteurFilmPersonnage, alignment=Qt.AlignCenter)
+        self.layout.addWidget(self.XacteurFilmPersonnage        , alignment=Qt.AlignCenter)
         self.PersonnageExists = True
     self.ConfirmButton.clicked.connect(self.ConfirmedXacteurFilm)
-    self.layout.addWidget(self.ConfirmButton, alignment=Qt.AlignCenter)
+    self.layout.addWidget(self.ConfirmButton                    , alignment=Qt.AlignCenter)
     self.layout.addWidget(QLabel())
     self.layout.addWidget(QLabel())
     CloseAll(self.curseur, self.connexion)
@@ -380,11 +380,11 @@ class FirstWindow(QWidget):                                 # Ne s'ouvre que qua
             EmergencyWindow()\t\t: Fenêtre qui sert globalement quand c'est la merde, par exemple quand il faut ajouter une entrée dans une table à la volée \n
             ''')
         self.label.setStyleSheet(DefaultCSS)
-        self.layout.addWidget(self.label, alignment=Qt.AlignCenter)
+        self.layout.addWidget(self.label                        , alignment=Qt.AlignCenter)
         self.bouton = QPushButton("Fermer cette fenêtre")
         self.bouton.setStyleSheet(DefaultCSS)
         self.bouton.clicked.connect(self.ButtonClose)
-        self.layout.addWidget(self.bouton, alignment=Qt.AlignCenter)
+        self.layout.addWidget(self.bouton                       , alignment=Qt.AlignCenter)
         self.setLayout(self.layout)
 
 
@@ -538,11 +538,11 @@ class OtherWindow(QWidget):
                 IsFound = True                                                                                                  #       |
                 break                                                                                                           #       |
         if not IsFound:                                                                                                         #       |
-            try:
+            try:                                                                                                                #       |
                 int(data[len(data) - 2])
             except ValueError:
                 if data[len(data) - 2] != '':
-                    self.curseur.execute("INSERT INTO nationalite (nom_nationalite) VALUES ('{}')".format(data[len(data) - 2])) #       |
+                    self.curseur.execute("INSERT INTO nationalite (nom_nationalite) VALUES ('{}')".format(data[len(data) - 2])) 
                     print("546 \t: INSERT INTO nationalite (nom_nationalite) VALUES ('{}')".format(data[len(data) - 2]))                        
                     print("547\tCette nationalité n'était pas dans la table, elle a donc été ajoutée")
                     data[len(data) - 2] = b[len(b) - 1][0] + 1
@@ -551,7 +551,7 @@ class OtherWindow(QWidget):
                 return "film"
             
         self.curseur.execute('SELECT * FROM genre') 
-        print("554 \t: SELECT * FROM genre")                                                                                            #       |
+        print("554 \t: SELECT * FROM genre")                                                                                    #       |
         b = self.curseur.fetchall()                                                                                             #       |
         IsFound = False                                                                                                         #       |
         for c in range(len(b)):                                                                                                 #       |
@@ -559,11 +559,11 @@ class OtherWindow(QWidget):
                 data[len(data) - 1] = b[c][0]                                                                                   #       |
                 IsFound = True                                                                                                  #       |
         if not IsFound:                                                                                                         #       |
-            try:
+            try:                                                                                                                #       |
                 int(data[len(data) - 1])
             except ValueError:
                 if data[len(data) - 1] != '':
-                    self.curseur.execute("INSERT INTO genre (nom_genre) VALUES ('{}')".format(data[len(data) - 1]))                     #       |
+                    self.curseur.execute("INSERT INTO genre (nom_genre) VALUES ('{}')".format(data[len(data) - 1]))                     
                     print("567 \t: INSERT INTO genre (nom_genre) VALUES ('{}')".format(data[len(data) - 1]))
                     print("568\tCe genre n'était pas dans la table, il a donc été ajouté")
                     data[len(data) - 1] = b[len(b) - 1][0] + 1
@@ -571,7 +571,7 @@ class OtherWindow(QWidget):
                 print("571\tERREUR : doit être de type str")
                 return "film"
         self.curseur.execute("SELECT id_realisateur, nom_realisateur, prenom_realisateur FROM realisateur")
-        print("574 \t: SELECT id_realisateur, nom_realisateur, prenom_realisateur FROM realisateur")                                    #       |
+        print("574 \t: SELECT id_realisateur, nom_realisateur, prenom_realisateur FROM realisateur")                            #       |
         b = self.curseur.fetchall()                                                                                             #       |
         IsFound = False                                                                                                         #       |
         for c in range(len(b)):                                                                                                 #       |
@@ -594,7 +594,7 @@ class OtherWindow(QWidget):
             self.connexion = sqlite3.connect(database)
             self.curseur = self.connexion.cursor()
             self.curseur.execute("SELECT id_realisateur, nom_realisateur, prenom_realisateur FROM realisateur")
-            print("597 \t: SELECT id_realisateur, nom_realisateur, prenom_realisateur FROM realisateur")                                #       |
+            print("597 \t: SELECT id_realisateur, nom_realisateur, prenom_realisateur FROM realisateur")                        #       |
             b = self.curseur.fetchall()                                                                                         #       |
             IsFound = False                                                                                                     #       |
             for c in range(len(b)):                                                                                             #       |
