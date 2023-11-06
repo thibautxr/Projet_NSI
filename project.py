@@ -3,7 +3,6 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
 import sqlite3
 
-
 database = "Film_realisateur_genre_nationalite.db"
 Memory = 15  # Modifier selon la quantité de RAM de l'utilisateur    (conseillé : 2Go : 5, 4Go : 15, 8Go : 30, 16Go : 50, 32Go : 100)    la valeur de base est faible pour être compatible avec des systèmes peu performants (en accord avec le choix du SGBD : SQLite)
 DefaultCSS = "color: white; font-size: 13px"
@@ -11,13 +10,11 @@ BackgroundCSS = "background-color: #17181a"
 X = 450
 Y = 800
 
-
 def CloseAll(cur, con):
     cur.close()
     con.commit()
     con.close()
     return 0
-
 
 
 def TableExist(table):
@@ -32,7 +29,6 @@ def TableExist(table):
         boool = False
     CloseAll(curseur, connexion)
     return boool
-
 
 
 def ReturnAllTable():
@@ -54,7 +50,6 @@ def ReturnAllTable():
                                                                                         # de la liste non-inversée est quelque chose dont on ne veut pas, je me souviens plus quoi exactement)
 
 
-
 def ReturnContentTable(table):
     connexion = sqlite3.connect(database)
     curseur = connexion.cursor()
@@ -68,7 +63,6 @@ def ReturnContentTable(table):
     return ContentTable
 
 
-
 def TableActeur():
     connexion = sqlite3.connect(database)
     curseur = connexion.cursor()
@@ -78,7 +72,6 @@ def TableActeur():
     print("78 \t: CREATE TABLE xacteurfilm (id_xaf INTEGER UNIQUE NOT NULL PRIMARY KEY AUTOINCREMENT, id_acteur_xaf INTEGER NOT NULL, id_film_xaf INTEGER NOT NULL, FOREIGN KEY(id_acteur_xaf) REFERENCES film (id_film) FOREIGN KEY(id_film_xaf) REFERENCES acteur (id_acteur))")
     CloseAll(curseur, connexion)
     return 0
-
 
 
 def AddActeur(self):
@@ -94,13 +87,11 @@ def AddActeur(self):
     self.PrenomLabel = QLabel("Prenom de l'acteur :")
     self.PrenomActeurLine = QLineEdit("Jerôme")
     self.ConfirmButton = QPushButton("Insérer")
-
     self.NomLabel.setStyleSheet(DefaultCSS)  
     self.NomActeurLine.setStyleSheet(DefaultCSS)  
     self.PrenomLabel.setStyleSheet(DefaultCSS)  
     self.PrenomActeurLine.setStyleSheet(DefaultCSS)  
     self.ConfirmButton.setStyleSheet(DefaultCSS)    
-
     self.ConfirmButton.clicked.connect(self.ConfirmedActeur)
     self.layout.addWidget(self.NomLabel                                 , alignment=Qt.AlignCenter)
     self.layout.addWidget(self.NomActeurLine                            , alignment=Qt.AlignCenter)
@@ -131,7 +122,6 @@ def AddActeur(self):
     return 0
 
 
-
 def AddRealisateur(self, NomReal = "Texier", PrenomReal = "Thibaut", DndReal = "2006-05-06", NatioReal = "FR"):
     self.setStyleSheet(BackgroundCSS)
     if not TableExist("nationalite"):
@@ -150,7 +140,6 @@ def AddRealisateur(self, NomReal = "Texier", PrenomReal = "Thibaut", DndReal = "
     self.WelcomeLabel.setStyleSheet("color: red; font-size: 23px")
     self.layout = QVBoxLayout()
     self.layout.addWidget(self.WelcomeLabel                             , alignment=Qt.AlignCenter)
-
     self.NomLabel = QLabel("Nom du réalisateur :")
     self.NomRealisateurLine = QLineEdit(NomReal)
     self.PrenomLabel = QLabel("Prénom du réalisateur :")
@@ -160,7 +149,6 @@ def AddRealisateur(self, NomReal = "Texier", PrenomReal = "Thibaut", DndReal = "
     self.NationaliteLabel = QLabel("Nationalité du réalisateur ({}) :".format(temp[:-2]))
     self.NationaliteRealisateurLine = QLineEdit(NatioReal)
     self.ConfirmButton = QPushButton("Insérer")
-
     self.NomLabel.setStyleSheet(DefaultCSS)  
     self.NomRealisateurLine.setStyleSheet(DefaultCSS)  
     self.PrenomLabel.setStyleSheet(DefaultCSS)  
@@ -170,7 +158,6 @@ def AddRealisateur(self, NomReal = "Texier", PrenomReal = "Thibaut", DndReal = "
     self.NationaliteLabel.setStyleSheet(DefaultCSS)  
     self.NationaliteRealisateurLine.setStyleSheet(DefaultCSS)  
     self.ConfirmButton.setStyleSheet(DefaultCSS)  
-
     CloseAll(self.curseur, self.connexion)
     self.ConfirmButton.clicked.connect(self.ConfirmedReal)
     self.layout.addWidget(self.NomLabel                                 , alignment=Qt.AlignCenter)
@@ -183,7 +170,6 @@ def AddRealisateur(self, NomReal = "Texier", PrenomReal = "Thibaut", DndReal = "
     self.layout.addWidget(self.NationaliteRealisateurLine               , alignment=Qt.AlignCenter)
     self.layout.addWidget(self.ConfirmButton                            , alignment=Qt.AlignCenter)
     return 0
-
 
 # Composition de la table film : id_film, titre_film, annee_film, id_realisateur_film, id_nationalite_film, id_genre_film
 def AddFilm(self):
@@ -224,7 +210,6 @@ def AddFilm(self):
     self.GenreFilmLine = QLineEdit("Science-fiction")
     self.ConfirmButton = QPushButton("Insérer")
     CloseAll(self.curseur, self.connexion)
-
     self.TitreLabel.setStyleSheet(DefaultCSS)
     self.TitreFilmLine.setStyleSheet(DefaultCSS)
     self.AnneeLabel.setStyleSheet(DefaultCSS)
@@ -236,7 +221,6 @@ def AddFilm(self):
     self.GenreLabel.setStyleSheet(DefaultCSS)
     self.GenreFilmLine.setStyleSheet(DefaultCSS)
     self.ConfirmButton.setStyleSheet(DefaultCSS)
-
     self.ConfirmButton.clicked.connect(self.ConfirmedFilm)
     self.layout.addWidget(self.TitreLabel                               , alignment=Qt.AlignCenter)
     self.layout.addWidget(self.TitreFilmLine                            , alignment=Qt.AlignCenter)
@@ -250,7 +234,6 @@ def AddFilm(self):
     self.layout.addWidget(self.GenreFilmLine                            , alignment=Qt.AlignCenter)
     self.layout.addWidget(self.ConfirmButton                            , alignment=Qt.AlignCenter)
     return 0
-
 
 
 def AddLink(self):
@@ -301,10 +284,7 @@ def AddLink(self):
     for i in range(len(self.ItemActeur)):
         self.ItemActeur[i] = QStandardItem(self.temp[i][1])
         self.ItemActeur[i].setData(self.temp[i][0], role=Qt.UserRole)
-        self.ModelActeur.appendRow(self.ItemActeur[i])
-
-    
-    
+        self.ModelActeur.appendRow(self.ItemActeur[i]) 
     self.WelcomeLabel = QLabel("Veuillez lier un acteur à un film")
     self.WelcomeLabel.setStyleSheet("color: red; font-size: 23px")
     self.layout = QVBoxLayout()
@@ -347,7 +327,6 @@ def AddLink(self):
     return 0
 
 
-
 class FirstWindow(QWidget):                                 # Ne s'ouvre que quand c'est la première ouverture, les fonctions rudimentaires de cette classe ne sont pas documentées
     def __init__(self):
         super().__init__()
@@ -388,17 +367,13 @@ class FirstWindow(QWidget):                                 # Ne s'ouvre que qua
         self.setLayout(self.layout)
 
 
-
     def ButtonClose(self):
         self.close()
-
 
 
     def closeEvent(self, event):
         self.Window = Window("Projet NSI", 450, 800)
         self.Window.show()
-
-
 
 
 class Window(QWidget):
@@ -412,16 +387,24 @@ class Window(QWidget):
         self.l = ReturnAllTable()
         self.lc = ReturnAllTable()
         self.layout = QVBoxLayout()
+        self.HLayout = QHBoxLayout()
         for i in range(len(self.l)):
             self.l[i] = QPushButton(self.l[i].capitalize())
-            self.layout.addWidget(self.l[i])
+            self.l[i].setStyleSheet("width: 80%; height: 22px; font-size: 13px; color: darkblue")
+            self.layout.addWidget(self.l[i], alignment=Qt.AlignCenter)
             self.l[i].clicked.connect(self.BoutonAppuye)
         if len(self.l) <= 4:                                                            # Si il y a moins de 5 tables
             self.a = QPushButton("Creer les tables Acteur et XacteurFilm")              # On crée un Bouton
             self.a.clicked.connect(self.BoutonAppuye)                                   # Qui crée les tables Acteur et XacteurFilm
-            self.layout.addWidget(self.a)
+            self.a.setStyleSheet("width: 260%; height: 22px; font-size: 13px; color: darkblue; ")
+            self.layout.addWidget(self.a, alignment=Qt.AlignCenter)
+        
+        self.ProfHelp = QPushButton("Comment tester les exercices ?")
+        self.ProfHelp.clicked.connect(self.BoutonAppuye)
+        self.ProfHelp.setStyleSheet("width: 260%; height: 22px; font-size: 13px; color: darkblue; ")
+        self.HLayout.addWidget(self.ProfHelp, alignment=Qt.AlignRight)
+        self.layout.addLayout(self.HLayout)
         self.setLayout(self.layout)
-
 
 
     def BoutonAppuye(self):
@@ -434,11 +417,14 @@ class Window(QWidget):
             TableActeur()
             self.ActeurWasJustCreated = True                                            # Permet de relancer le programme une seconde fois après la création des tables
             self.close()
+        elif sender.text().lower() == "Comment tester les exercices ?".lower():
+            self.win =EmergencyWindow(3)
+            self.close()
+            self.win.show()
         else:
             self.win = LastWindow("Contenu de la table {}".format(sender.text().lower()), self.X, self.Y, sender.text().lower(), self.Iteration)
             self.close()
             self.win.show()
-
 
 
 class OtherWindow(QWidget):
@@ -465,7 +451,6 @@ class OtherWindow(QWidget):
         self.setLayout(self.layout)
 
 
-
     def ConfirmedReal(self):
         self.connexion = sqlite3.connect(database)
         self.curseur = self.connexion.cursor()
@@ -488,14 +473,14 @@ class OtherWindow(QWidget):
                 data.append(b[c][0])                                                                        # Alors on affecte à la fin du tableau l'id de la nationalite indiquée par l'utilisateur
                 IsFound = True
                 break
-        if not IsFound:                                                                                             # Si la nationalite n'est pas dans la table    
+        if not IsFound: 
+            assert self.NationaliteRealisateurLine.text().upper() != '' and self.NationaliteRealisateurLine.text().upper() != [], ("Aucune nationalité n'a été entrée")                                                                                            # Si la nationalite n'est pas dans la table    
             try:
                 int(self.NationaliteRealisateurLine.text().upper())
             except ValueError:
-                if self.NationaliteRealisateurLine.text().upper() != '':
-                    self.curseur.execute("INSERT INTO nationalite (nom_nationalite) VALUES ('{}')".format(self.NationaliteRealisateurLine.text().upper()))     # Créer une nouvelle nationalité sachant que data[len(a) - 1] contient la nationalité entree par l'utilisateur
-                    print("497 \t: INSERT INTO nationalite (nom_nationalite) VALUES ('{}')".format(self.NationaliteRealisateurLine.text().upper()))
-                    data.append(len(b) + 1)
+                self.curseur.execute("INSERT INTO nationalite (nom_nationalite) VALUES ('{}')".format(self.NationaliteRealisateurLine.text().upper()))     # Créer une nouvelle nationalité sachant que data[len(a) - 1] contient la nationalité entree par l'utilisateur
+                print("497 \t: INSERT INTO nationalite (nom_nationalite) VALUES ('{}')".format(self.NationaliteRealisateurLine.text().upper()))
+                data.append(len(b) + 1)
             else:
                 print("500\tLe nom de la nationalite doit être str")
                 return "realisateur"
@@ -513,7 +498,6 @@ class OtherWindow(QWidget):
         self.close()
         self.w.show()
     
-
 
     def ConfirmedFilm(self):
         self.connexion = sqlite3.connect(database)
@@ -538,14 +522,14 @@ class OtherWindow(QWidget):
                 IsFound = True                                                                                                  #       |
                 break                                                                                                           #       |
         if not IsFound:                                                                                                         #       |
-            try:                                                                                                                #       |
+            assert data[len(data) - 2] != '' and data[len(data) - 2] != [], ("Aucune Valeur n'a été entrée pour le champ Nationalite")                        #       |
+            try:                                                                                                                
                 int(data[len(data) - 2])
             except ValueError:
-                if data[len(data) - 2] != '':
-                    self.curseur.execute("INSERT INTO nationalite (nom_nationalite) VALUES ('{}')".format(data[len(data) - 2])) 
-                    print("546 \t: INSERT INTO nationalite (nom_nationalite) VALUES ('{}')".format(data[len(data) - 2]))                        
-                    print("547\tCette nationalité n'était pas dans la table, elle a donc été ajoutée")
-                    data[len(data) - 2] = b[len(b) - 1][0] + 1
+                self.curseur.execute("INSERT INTO nationalite (nom_nationalite) VALUES ('{}')".format(data[len(data) - 2])) 
+                print("546 \t: INSERT INTO nationalite (nom_nationalite) VALUES ('{}')".format(data[len(data) - 2]))                        
+                print("547\tCette nationalité n'était pas dans la table, elle a donc été ajoutée")
+                data[len(data) - 2] = b[len(b) - 1][0] + 1
             else:
                 print("550\tLe nom de la nationalite doit être str")
                 return "film"
@@ -557,16 +541,16 @@ class OtherWindow(QWidget):
         for c in range(len(b)):                                                                                                 #       |
             if not IsFound and data[len(data) - 1].lower() == b[c][1].lower():                                                  #      PASSER D'UN GENRE A UN ID
                 data[len(data) - 1] = b[c][0]                                                                                   #       |
-                IsFound = True                                                                                                  #       |
+                IsFound = True                                                                                                  #       |                                                                                                  #       |
         if not IsFound:                                                                                                         #       |
-            try:                                                                                                                #       |
+            assert data[len(data) - 1] != '' and data[len(data) - 1] != [], ("Aucune valeur n'a été entrée pour le champ Genre")
+            try:
                 int(data[len(data) - 1])
             except ValueError:
-                if data[len(data) - 1] != '':
-                    self.curseur.execute("INSERT INTO genre (nom_genre) VALUES ('{}')".format(data[len(data) - 1]))                     
-                    print("567 \t: INSERT INTO genre (nom_genre) VALUES ('{}')".format(data[len(data) - 1]))
-                    print("568\tCe genre n'était pas dans la table, il a donc été ajouté")
-                    data[len(data) - 1] = b[len(b) - 1][0] + 1
+                self.curseur.execute("INSERT INTO genre (nom_genre) VALUES ('{}')".format(data[len(data) - 1]))                     
+                print("567 \t: INSERT INTO genre (nom_genre) VALUES ('{}')".format(data[len(data) - 1]))
+                print("568\tCe genre n'était pas dans la table, il a donc été ajouté")
+                data[len(data) - 1] = b[len(b) - 1][0] + 1
             else:
                 print("571\tERREUR : doit être de type str")
                 return "film"
@@ -736,13 +720,13 @@ class OtherWindow(QWidget):
                     data[2] = a[i][0]
                     NationaliteExists = True
             if not NationaliteExists:
+                assert self.NationaliteLine.text().upper() != '' and self.NationaliteLine.text().upper() != [], ("Aucune valeur n'a été entrée pour le champ Nationalite")
                 try:
                     int(self.NationaliteLine.text().upper())
                 except ValueError:
-                    if self.NationaliteLine.text().upper() != '':
-                        self.curseur.execute("INSERT INTO nationalite (nom_nationalite) VALUES ('{}')".format(self.NationaliteLine.text().upper()))
-                        print("744 \t: INSERT INTO nationalite (nom_nationalite) VALUES ('{}')".format(self.NationaliteLine.text().upper()))
-                        data[2] = len(a) + 1
+                    self.curseur.execute("INSERT INTO nationalite (nom_nationalite) VALUES ('{}')".format(self.NationaliteLine.text().upper()))
+                    print("744 \t: INSERT INTO nationalite (nom_nationalite) VALUES ('{}')".format(self.NationaliteLine.text().upper()))
+                    data[2] = len(a) + 1
                 else:
                     print("747 \t: Le nom de la nationalite doit être str")
                     return "acteur"
@@ -858,7 +842,7 @@ class LastWindow(QWidget):
 class EmergencyWindow(QWidget):                                                             # Comme son nom l'indique, elle sert que quand c'est le zbeul, genre quand il faut ajouter un Réalisateur en urgence
     def __init__(self, EmergencyId: int = 0, NomReal: str = "Texier", PrenomReal: str = "Thibaut", DdnReal: str = "2006-05-06", NatioReal: str = "FR"):
         super().__init__()
-        self.setWindowTitle("Ajout Realisateur")
+        self.setWindowTitle("Comment Tester les Exercices ?")
         self.Y = 800
         self.X = 450
         self.resize(450, 800)
@@ -876,6 +860,22 @@ class EmergencyWindow(QWidget):                                                 
             self.ErrorLabel = QLabel("En raison d'une erreur de programmation qui provoque\nune fuite de mémoire, Veuillez relancer le programme")
             self.ErrorLabel.setStyleSheet("color: red; font-size: 20px")
             self.layout.addWidget(self.ErrorLabel, alignment=Qt.AlignCenter)
+        elif EmergencyId == 3:
+            self.setStyleSheet(BackgroundCSS)
+            self.ExplainLabel =  QLabel(
+                '''
+                Exercice 1 : Cliquer sur "Réalisateur" et completez les champs puis appuyez sur le bouton "Insérer"\n\n
+                Exercice 2 : Cliquer sur "Film" et completez les champs puis appyez sur le bouton "Insérer"\n\n
+                Exercice 3 : Appuyer sur le bouton "Creer les tables Acteur et XacteurFilm"\n\n
+                Exercice 4 : Après avoir appuyé sur le bouton "Creer les tables Acteur et XacteurFilm", cliquer sur le bouton "Acteur"\n\n
+                Exercice 5 : Après avoir appuyé sur le bouton "Creer les tables Acteur et XacteurFilm", cliquer sur le bouton "Xacteurfilm"\n\n
+                Exercice 6 : Contempler cette superbe interface graphique \n\n
+                Exercice 7 : Après avoir appuyé sur le bouton "Creer les tables Acteur et XacteurFilm", cliquer sur le bouton "Xacteurfilm" Puis sur "Ajouter un Attribut "Personnage""\n\n
+                Exercice 8 : Directement implanté dans le fonctionnement du menu Xacteurfilm\n\n
+                Exercice 9 : Après avoir appuyé sur le bouton "Creer les tables Acteur et XacteurFilm", cliquer sur le bouton "Acteur" Puis sur "Ajouter un attribut "id_nationalite_acteur""\n\n
+                ''')
+            self.ExplainLabel.setStyleSheet("color: white; font-size: 16px")
+            self.layout.addWidget(self.ExplainLabel, alignment=Qt.AlignCenter)
         self.setLayout(self.layout)
 
 
@@ -902,14 +902,14 @@ class EmergencyWindow(QWidget):                                                 
                 data.append(b[c][0])                                                                        # Alors on affecte à la fin du tableau l'id de la nationalite indiquée par l'utilisateur
                 IsFound = True
                 break
-        if not IsFound:  
+        if not IsFound: 
+            assert self.NationaliteRealisateurLine.text().upper() != '' and self.NationaliteRealisateurLine.text().upper() != [],( "Aucune valeur n'a été entrée pour le champ Nationalite")
             try:                                                                                           # Si la nationalite n'est pas dans la table    
                 int(self.NationaliteRealisateurLine.text().upper())
             except ValueError:
-                if self.NationaliteRealisateurLine.text().upper() != '':
-                    self.curseur.execute("INSERT INTO nationalite (nom_nationalite) VALUES ('{}')".format(self.NationaliteRealisateurLine.text().upper()))     # Créer une nouvelle nationalité sachant que data[len(a) - 1] contient la nationalité entree par l'utilisateur
-                    print("911 \t: INSERT INTO nationalite (nom_nationalite) VALUES ('{}')".format(self.NationaliteRealisateurLine.text().upper()))
-                    data.append(len(b) + 1)
+                self.curseur.execute("INSERT INTO nationalite (nom_nationalite) VALUES ('{}')".format(self.NationaliteRealisateurLine.text().upper()))     # Créer une nouvelle nationalité sachant que data[len(a) - 1] contient la nationalité entree par l'utilisateur
+                print("911 \t: INSERT INTO nationalite (nom_nationalite) VALUES ('{}')".format(self.NationaliteRealisateurLine.text().upper()))
+                data.append(len(b) + 1)
             else:
                 print("914 \t: Le nom de la nationalite doit être str")
                 return "realisateur"
