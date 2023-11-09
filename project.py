@@ -23,9 +23,9 @@ def TableExist(table):
     boool = True
     try:
         curseur.execute("SELECT * FROM {}".format(table))
-        print("29 \t: SELECT * FROM {}".format(table))
+        print("SELECT * FROM {}".format(table))
     except sqlite3.OperationalError:            # Si la table n'existe pas
-        print("31\tERREUR : La table {} n'existe pas".format(table))
+        print("\tERREUR : La table {} n'existe pas".format(table))
         boool = False
     CloseAll(curseur, connexion)
     return boool
@@ -35,7 +35,7 @@ def ReturnAllTable():
     connexion = sqlite3.connect(database)
     curseur = connexion.cursor()
     curseur.execute("SELECT name FROM sqlite_master WHERE type='table';")               # la table sqlite_master est une table créée dans chaque database SQLite, elle contient notamment
-    print("42 \t: SELECT name FROM sqlite_master WHERE type='table';")                         # le nom de toutes les tables de la database, ce que nous récupérons ici
+    print("SELECT name FROM sqlite_master WHERE type='table';")                         # le nom de toutes les tables de la database, ce que nous récupérons ici
     a = curseur.fetchall()
     l = []
     cas = "(),'"                                                                        # la requête renvoie une chaine un peu bizarre, donc on retire ces caractères pour rendre 
@@ -54,7 +54,7 @@ def ReturnContentTable(table):
     connexion = sqlite3.connect(database)
     curseur = connexion.cursor()
     curseur.execute("PRAGMA table_info({})".format(table))              # la requête PRAGMA table_info(table) retourne les attributs de la table, par exemple [[0, id_film], [1, titre_film], [2, nationalite_film], ...]
-    print("62 \t: PRAGMA table_info({})".format(table))                        # le print est ajouté pour que le programme ne fasse pas "boite noire" et que les actions du programme soient affichées dans le prompt
+    print("PRAGMA table_info({})".format(table))                        # le print est ajouté pour que le programme ne fasse pas "boite noire" et que les actions du programme soient affichées dans le prompt
     ProprieteTable = curseur.fetchall()
     ContentTable = []
     for i in range(len(ProprieteTable)):
@@ -67,9 +67,9 @@ def TableActeur():
     connexion = sqlite3.connect(database)
     curseur = connexion.cursor()
     curseur.execute("CREATE TABLE acteur (id_acteur INTEGER UNIQUE NOT NULL PRIMARY KEY AUTOINCREMENT, nom_acteur TEXT NOT NULL, prenom_acteur TEXT NOT NULL)")
-    print("76 \t: CREATE TABLE acteur (id_acteur INTEGER UNIQUE NOT NULL PRIMARY KEY AUTOINCREMENT, nom_acteur TEXT NOT NULL, prenom_acteur TEXT NOT NULL)")
+    print("CREATE TABLE acteur (id_acteur INTEGER UNIQUE NOT NULL PRIMARY KEY AUTOINCREMENT, nom_acteur TEXT NOT NULL, prenom_acteur TEXT NOT NULL)")
     curseur.execute("CREATE TABLE xacteurfilm (id_xaf INTEGER UNIQUE NOT NULL PRIMARY KEY AUTOINCREMENT, id_acteur_xaf INTEGER NOT NULL, id_film_xaf INTEGER NOT NULL, FOREIGN KEY(id_acteur_xaf) REFERENCES film (id_film) FOREIGN KEY(id_film_xaf) REFERENCES acteur (id_acteur))")
-    print("78 \t: CREATE TABLE xacteurfilm (id_xaf INTEGER UNIQUE NOT NULL PRIMARY KEY AUTOINCREMENT, id_acteur_xaf INTEGER NOT NULL, id_film_xaf INTEGER NOT NULL, FOREIGN KEY(id_acteur_xaf) REFERENCES film (id_film) FOREIGN KEY(id_film_xaf) REFERENCES acteur (id_acteur))")
+    print("CREATE TABLE xacteurfilm (id_xaf INTEGER UNIQUE NOT NULL PRIMARY KEY AUTOINCREMENT, id_acteur_xaf INTEGER NOT NULL, id_film_xaf INTEGER NOT NULL, FOREIGN KEY(id_acteur_xaf) REFERENCES film (id_film) FOREIGN KEY(id_film_xaf) REFERENCES acteur (id_acteur))")
     CloseAll(curseur, connexion)
     return 0
 
@@ -98,7 +98,7 @@ def AddActeur(self):
     self.layout.addWidget(self.PrenomLabel                              , alignment=Qt.AlignCenter)
     self.layout.addWidget(self.PrenomActeurLine                         , alignment=Qt.AlignCenter)
     self.curseur.execute("PRAGMA table_info(acteur)")
-    print("110 \t: PRAGMA table_info(acteur)")
+    print("PRAGMA table_info(acteur)")
     if len(self.curseur.fetchall()) <= 3:                                   # Si la table acteur a moins de 4 attributs
         self.AddNationaliteActeur = QPushButton("Ajouter un attribut \"id_nationalite_acteur\"")
         self.AddNationaliteActeur.setStyleSheet(DefaultCSS)
@@ -106,7 +106,7 @@ def AddActeur(self):
         self.layout.addWidget(self.AddNationaliteActeur                 , alignment=Qt.AlignCenter)
     else:
         self.curseur.execute("SELECT * FROM nationalite")
-        print("118 \t: SELECT * FROM nationalite")
+        print("SELECT * FROM nationalite")
         a = self.curseur.fetchall()
         self.temp = ''                                                                           #   chaine de charactères pour avertir l'utilisateur
         for i in a:                                                                         #   des nationalités existentes et du format qu'elles ont
@@ -131,7 +131,7 @@ def AddRealisateur(self, NomReal = "Texier", PrenomReal = "Thibaut", DndReal = "
     self.connexion = sqlite3.connect(database)
     self.curseur = self.connexion.cursor()
     self.curseur.execute("SELECT nom_nationalite FROM nationalite")     
-    print("144 \t: SELECT nom_nationalite FROM nationalite")                                    #
+    print("SELECT nom_nationalite FROM nationalite")                            #
     t = self.curseur.fetchall()                                                         #   on récupère le nom des nationalités et on en fait une
     temp = ''                                                                           #   chaine de charactères pour avertir l'utilisateur
     for i in t:                                                                         #   des nationalités existentes et du format qu'elles ont
@@ -189,7 +189,7 @@ def AddFilm(self):
     self.connexion = sqlite3.connect(database)
     self.curseur = self.connexion.cursor()
     self.curseur.execute("SELECT nom_nationalite FROM nationalite")
-    print("206 \t: SELECT nom_nationalite FROM nationalite")
+    print("SELECT nom_nationalite FROM nationalite")
     t = self.curseur.fetchall()
     temp = ''
     for i in t:
@@ -249,11 +249,11 @@ def AddLink(self):
     self.connexion = sqlite3.connect(database)
     self.curseur = self.connexion.cursor()
     self.curseur.execute("SELECT * FROM acteur")
-    print("269 \t: SELECT * FROM acteur")
+    print("SELECT * FROM acteur")
     t = self.curseur.fetchall()
     if t == []:                                     # Si la requête ne renvoie rien, mais pas d'erreur sqlite3.OperationError, c'est que la table existe mais est vide
         CloseAll(self.curseur, self.connexion)
-        print("273\tIl n'y a pas d'acteur dans la table acteur, Redirection vers le programme d'ajout d'acteur")
+        print("\tIl n'y a pas d'acteur dans la table acteur, Redirection vers le programme d'ajout d'acteur")
         self.EWin = EmergencyWindow(1)
         self.EWin.show()
         return "xacteurfilm"
@@ -261,7 +261,7 @@ def AddLink(self):
     for i in range(len(t)):
         self.temp.append([t[i][0], t[i][1] + ' ' + t[i][2]])                # La structure de temp sera : [[id_acteur, nom_acteur prenom_acteur], [...], ...]
     self.curseur.execute("SELECT * FROM film ORDER BY titre_film")
-    print("281 \t: SELECT * FROM film ORDER BY titre_film")
+    print("SELECT * FROM film ORDER BY titre_film")
     t = self.curseur.fetchall()
     self.TabTitreFilm = []
     for i in range(len(t)):
@@ -307,7 +307,7 @@ def AddLink(self):
     self.layout.addWidget(self.ActeurLabel                      , alignment=Qt.AlignCenter)
     self.layout.addWidget(self.MenuActeur                       , alignment=Qt.AlignCenter)
     self.curseur.execute("PRAGMA table_info(xacteurfilm)")
-    print("330 \t: PRAGMA table_info(xacteurfilm)")
+    print("PRAGMA table_info(xacteurfilm)")
     if len(self.curseur.fetchall()) <= 3:
         self.AddPersonnage = QPushButton("Ajouter un Attribut \"Personnage\"")
         self.AddPersonnage.setStyleSheet("color: white; font-size: 11px")
@@ -387,7 +387,6 @@ class Window(QWidget):
         self.l = ReturnAllTable()
         self.lc = ReturnAllTable()
         self.layout = QVBoxLayout()
-        self.HLayout = QHBoxLayout()
         for i in range(len(self.l)):
             self.l[i] = QPushButton(self.l[i].capitalize())
             self.l[i].setStyleSheet("width: 80%; height: 22px; font-size: 13px; color: darkblue")
@@ -402,8 +401,7 @@ class Window(QWidget):
         self.ProfHelp = QPushButton("Comment tester les exercices ?")
         self.ProfHelp.clicked.connect(self.BoutonAppuye)
         self.ProfHelp.setStyleSheet("width: 260%; height: 22px; font-size: 13px; color: darkblue; ")
-        self.HLayout.addWidget(self.ProfHelp, alignment=Qt.AlignRight)
-        self.layout.addLayout(self.HLayout)
+        self.layout.addWidget(self.ProfHelp, alignment=Qt.AlignRight)
         self.setLayout(self.layout)
 
 
@@ -457,16 +455,16 @@ class OtherWindow(QWidget):
         req = 'INSERT INTO realisateur (nom_realisateur, prenom_realisateur, ddn_realisateur, id_nationalite_realisateur) VALUES (?, ?, ?, ?)'
         data = [self.NomRealisateurLine.text().capitalize(), self.PrenomRealisateurLine.text().capitalize(), self.DdnRealisateurLine.text()]
         self.curseur.execute('SELECT * FROM nationalite')
-        print("475 \t: SELECT * FROM nationalite")
+        print("SELECT * FROM nationalite")
         b = self.curseur.fetchall()
         self.curseur.execute('SELECT * FROM realisateur')
-        print("478 \t: SELECT * FROM realisateur")
+        print("SELECT * FROM realisateur")
         d = self.curseur.fetchall()
         Exist = False
         IsFound = False
         for c in range(len(d)):
             if data[0] + ' ' + data[1] == d[c][1].capitalize() + ' ' + d[c][2].capitalize():                  # Si le nom prenom entré (en minuscule) est égal à l'un présent dans la table realisateur
-                print("484\tCe réalisateur existe déjà dans la table, son id est {}".format(d[c][0]))
+                print("\tCe réalisateur existe déjà dans la table, son id est {}".format(d[c][0]))
                 Exist = True 
         for c in range(len(b)):
             if self.NationaliteRealisateurLine.text().upper() == b[c][1]:                                                                 # Si la fin du tableau data[], qui contient la nationalité, est identique à l'une des valeurs de la table nationalité (le tableau ressemble à [id, nationalite], [id, nationalite], ...)
@@ -479,19 +477,19 @@ class OtherWindow(QWidget):
                 int(self.NationaliteRealisateurLine.text().upper())
             except ValueError:
                 self.curseur.execute("INSERT INTO nationalite (nom_nationalite) VALUES ('{}')".format(self.NationaliteRealisateurLine.text().upper()))     # Créer une nouvelle nationalité sachant que data[len(a) - 1] contient la nationalité entree par l'utilisateur
-                print("497 \t: INSERT INTO nationalite (nom_nationalite) VALUES ('{}')".format(self.NationaliteRealisateurLine.text().upper()))
+                print("INSERT INTO nationalite (nom_nationalite) VALUES ('{}')".format(self.NationaliteRealisateurLine.text().upper()))
                 data.append(len(b) + 1)
             else:
-                print("500\tLe nom de la nationalite doit être str")
+                print("\tLe nom de la nationalite doit être str")
                 return "realisateur"
         if not Exist:
             try:
                 int(data[0]), int(data[1])
             except ValueError:
                 self.curseur.execute(req, data)
-                print("507 \t: INSERT INTO realisateur (nom_realisateur, prenom_realisateur, ddn_realisateur, id_nationalite_realisateur) VALUES ('{}', '{}', {}, {})".format(data[0].capitalize(), data[1].capitalize(), data[2], data[3]))
+                print("INSERT INTO realisateur (nom_realisateur, prenom_realisateur, ddn_realisateur, id_nationalite_realisateur) VALUES ('{}', '{}', {}, {})".format(data[0].capitalize(), data[1].capitalize(), data[2], data[3]))
             else:
-                print("509\tERREUR : doit être de type str")
+                print("\tERREUR : doit être de type str")
                 return "realisateur"
         CloseAll(self.curseur, self.connexion)
         self.w = LastWindow("Contenu de la table Realisateur", self.Y, self.Y, "realisateur", self.Iteration)
@@ -513,7 +511,7 @@ class OtherWindow(QWidget):
             if data[1] == '':
                 return "film"
         self.curseur.execute('SELECT * FROM nationalite')
-        print("532 \t: SELECT * FROM nationalite")                                                                              #       |
+        print("SELECT * FROM nationalite")                                                                              #       |
         b = self.curseur.fetchall()                                                                                             #       |
         IsFound = False                                                                                                         #       |
         for c in range(len(b)):                                                                                                 #       |
@@ -527,15 +525,15 @@ class OtherWindow(QWidget):
                 int(data[len(data) - 2])
             except ValueError:
                 self.curseur.execute("INSERT INTO nationalite (nom_nationalite) VALUES ('{}')".format(data[len(data) - 2])) 
-                print("546 \t: INSERT INTO nationalite (nom_nationalite) VALUES ('{}')".format(data[len(data) - 2]))                        
-                print("547\tCette nationalité n'était pas dans la table, elle a donc été ajoutée")
+                print("INSERT INTO nationalite (nom_nationalite) VALUES ('{}')".format(data[len(data) - 2]))                        
+                print("\tCette nationalité n'était pas dans la table, elle a donc été ajoutée")
                 data[len(data) - 2] = b[len(b) - 1][0] + 1
             else:
-                print("550\tLe nom de la nationalite doit être str")
+                print("\tLe nom de la nationalite doit être str")
                 return "film"
             
         self.curseur.execute('SELECT * FROM genre') 
-        print("554 \t: SELECT * FROM genre")                                                                                    #       |
+        print("SELECT * FROM genre")                                                                                    #       |
         b = self.curseur.fetchall()                                                                                             #       |
         IsFound = False                                                                                                         #       |
         for c in range(len(b)):                                                                                                 #       |
@@ -548,14 +546,14 @@ class OtherWindow(QWidget):
                 int(data[len(data) - 1])
             except ValueError:
                 self.curseur.execute("INSERT INTO genre (nom_genre) VALUES ('{}')".format(data[len(data) - 1]))                     
-                print("567 \t: INSERT INTO genre (nom_genre) VALUES ('{}')".format(data[len(data) - 1]))
-                print("568\tCe genre n'était pas dans la table, il a donc été ajouté")
+                print("INSERT INTO genre (nom_genre) VALUES ('{}')".format(data[len(data) - 1]))
+                print("\tCe genre n'était pas dans la table, il a donc été ajouté")
                 data[len(data) - 1] = b[len(b) - 1][0] + 1
             else:
-                print("571\tERREUR : doit être de type str")
+                print("\tERREUR : doit être de type str")
                 return "film"
         self.curseur.execute("SELECT id_realisateur, nom_realisateur, prenom_realisateur FROM realisateur")
-        print("574 \t: SELECT id_realisateur, nom_realisateur, prenom_realisateur FROM realisateur")                            #       |
+        print("SELECT id_realisateur, nom_realisateur, prenom_realisateur FROM realisateur")                            #       |
         b = self.curseur.fetchall()                                                                                             #       |
         IsFound = False                                                                                                         #       |
         for c in range(len(b)):                                                                                                 #       |
@@ -564,11 +562,11 @@ class OtherWindow(QWidget):
                 data[len(data) - 3] = b[c][0]                                                                                   #       |
                 IsFound = True                                                                                                  #       |
         if not IsFound:                                                                                                         #       |
-            print("583\tCe réalisateur n'est pas présent dans la table, vous allez être redirigé vers le programme d'ajout de réalisateur")
+            print("\tCe réalisateur n'est pas présent dans la table, vous allez être redirigé vers le programme d'ajout de réalisateur")
             CloseAll(self.curseur, self.connexion)
             NomPrenom = self.RealisateurFilmLine.text().split(" ")
             if len(NomPrenom) != 2:
-                print("587\tLes prénoms/noms composés doivent être séparés d'un tiret (-)")
+                print("\tLes prénoms/noms composés doivent être séparés d'un tiret (-)")
                 self.close()
                 self.EWin = EmergencyWindow(0)
                 self.EWin.show()
@@ -578,7 +576,7 @@ class OtherWindow(QWidget):
             self.connexion = sqlite3.connect(database)
             self.curseur = self.connexion.cursor()
             self.curseur.execute("SELECT id_realisateur, nom_realisateur, prenom_realisateur FROM realisateur")
-            print("597 \t: SELECT id_realisateur, nom_realisateur, prenom_realisateur FROM realisateur")                        #       |
+            print("SELECT id_realisateur, nom_realisateur, prenom_realisateur FROM realisateur")                        #       |
             b = self.curseur.fetchall()                                                                                         #       |
             IsFound = False                                                                                                     #       |
             for c in range(len(b)):                                                                                             #       |
@@ -587,16 +585,16 @@ class OtherWindow(QWidget):
                     data[len(data) - 3] = b[c][0]                                                                               #       |
                     IsFound = True                                                                                              #       |
             if not IsFound:                                                                                                     #       |
-                print("606\tCe réalisateur n'est pas présent dans la table, faites attention à taper le même réalisateur dans le programme et dans la sous-programme d'ajout")
+                print("\tCe réalisateur n'est pas présent dans la table, faites attention à taper le même réalisateur dans le programme et dans la sous-programme d'ajout")
                 CloseAll(self.curseur, self.connexion)
                 return 1
         self.curseur.execute("SELECT titre_film, annee_film, id_realisateur_film, id_nationalite_film, id_genre_film FROM film")
-        print("610 \t: SELECT titre_film, annee_film, id_realisateur_film, id_nationalite_film, id_genre_film FROM film")
+        print("SELECT titre_film, annee_film, id_realisateur_film, id_nationalite_film, id_genre_film FROM film")
         a = self.curseur.fetchall()
         Exists = False
         for i in range(len(a)):
             if a[i][0] == data[0] and a[i][1] == data[1] and a[i][2] == data[2] and a[i][3] == data[3] and a[i][4] == data[4]:
-                print("615\tCe film est déja dans la table, il se trouve à l'indice {} et son id est {}".format(i, a[i][0]))
+                print("\tCe film est déja dans la table, il se trouve à l'indice {} et son id est {}".format(i, a[i][0]))
                 Exists = True
                 CloseAll(self.curseur, self.connexion)
                 break
@@ -605,11 +603,11 @@ class OtherWindow(QWidget):
                 int(data[0]), int(data[1]) , int(data[2])
             except ValueError:
                 self.curseur.execute(req, data)
-                print("624 \t: ", req, data)    
+                print(req, data)    
                 CloseAll(self.curseur, self.connexion)
                 self.setLayout(self.layout)
             else:
-                print("628 \t: L'id du réalisateur doit être un entier et le nom/prenom doit être un str ")                  # ne s'executera normalement jamais car toutes les actions possibles sont couvertes, mais on sait jamais
+                print("L'id du réalisateur doit être un entier et le nom/prenom doit être un str ")                  # ne s'executera normalement jamais car toutes les actions possibles sont couvertes, mais on sait jamais
                 return "film"
         self.w = LastWindow("Contenu de la table film", self.X, self.Y, "film", self.Iteration)
         self.close()
@@ -623,44 +621,44 @@ class OtherWindow(QWidget):
         self.curseur = self.connexion.cursor()
         if not self.PersonnageExists:
             self.curseur.execute("SELECT id_acteur_xaf, id_film_xaf FROM xacteurfilm WHERE id_acteur_xaf = {} AND id_film_xaf = {}".format(ActeurId, FilmId))
-            print("642 \t: SELECT id_acteur_xaf, id_film_xaf FROM xacteurfilm WHERE id_acteur_xaf = {} AND id_film_xaf = {}".format(ActeurId, FilmId))
+            print("SELECT id_acteur_xaf, id_film_xaf FROM xacteurfilm WHERE id_acteur_xaf = {} AND id_film_xaf = {}".format(ActeurId, FilmId))
             if self.curseur.fetchall() == []:
                 self.curseur.execute("INSERT INTO xacteurfilm (id_acteur_xaf, id_film_xaf) VALUES ({}, {})".format(ActeurId, FilmId))
-                print("645 \t: INSERT INTO xacteurfilm (id_acteur_xaf, id_film_xaf) VALUES ({}, {})".format(ActeurId, FilmId))
+                print("INSERT INTO xacteurfilm (id_acteur_xaf, id_film_xaf) VALUES ({}, {})".format(ActeurId, FilmId))
                 CloseAll(self.curseur, self.connexion)
                 self.w = LastWindow("Contenu de la table xacteurfilm", self.X, self.Y, "xacteurfilm", self.Iteration)
                 self.close()
                 self.w.show()
             else:
-                print("651 \t: Cet acteur a déjà été lié à ce film")
+                print("Cet acteur a déjà été lié à ce film")
                 CloseAll(self.curseur, self.connexion)
         if self.PersonnageExists:
             self.curseur.execute("SELECT personnage_xaf FROM xacteurfilm WHERE id_acteur_xaf = {} AND id_film_xaf = {}".format(ActeurId, FilmId))       # L'interêt de séléctionner le personnage seulement est qu'on peut séparer un retour "None" et un retour vide, afin de 
-            print("655 \t: SELECT personnage_xaf FROM xacteurfilm WHERE id_acteur_xaf = {} AND id_film_xaf = {}".format(ActeurId, FilmId))                      # savoir si on doit ajouter 3 valeurs ou mettre à jour une ligne existante qui n'a pas encore de valeur "Personnage"
+            print("SELECT personnage_xaf FROM xacteurfilm WHERE id_acteur_xaf = {} AND id_film_xaf = {}".format(ActeurId, FilmId))                      # savoir si on doit ajouter 3 valeurs ou mettre à jour une ligne existante qui n'a pas encore de valeur "Personnage"
             a = self.curseur.fetchall()
             if a == []:                 # Si la ligne n'existe pas 
                 try:
                     int(self.XacteurFilmPersonnage.text().capitalize())
                 except ValueError:
                     self.curseur.execute("INSERT INTO xacteurfilm (id_acteur_xaf, id_film_xaf, personnage_xaf) VALUES ({}, {}, '{}')".format(ActeurId, FilmId, self.XacteurFilmPersonnage.text().capitalize()))
-                    print("662 \t: INSERT INTO xacteurfilm (id_acteur_xaf, id_film_xaf, personnage_xaf) VALUES ({}, {}, '{}')".format(ActeurId, FilmId, self.XacteurFilmPersonnage.text().capitalize()))
+                    print("INSERT INTO xacteurfilm (id_acteur_xaf, id_film_xaf, personnage_xaf) VALUES ({}, {}, '{}')".format(ActeurId, FilmId, self.XacteurFilmPersonnage.text().capitalize()))
                     CloseAll(self.curseur, self.connexion)
                     self.w = LastWindow("Contenu de la table xacteurfilm", self.X, self.Y, "xacteurfilm", self.Iteration)
                     self.close()
                     self.w.show()
                 else:
-                    print("668 \t: ERREUR : doit être de type str")
+                    print("ERREUR : doit être de type str")
                     return "xacteurfilm"
             
             elif a[0][0] == None:       # Si la ligne existe MAIS n'a pas encore de valeur "Personnage" ce qui est possible si l'attribut a été ajouté après ajout d'acteurs
                 self.curseur.execute("UPDATE xacteurfilm SET personnage_xaf = '{}' WHERE id_acteur_xaf = {} AND id_film_xaf = {}".format(self.XacteurFilmPersonnage.text().capitalize(), ActeurId, FilmId))
-                print("673 \t: UPDATE xacteurfilm SET personnage_xaf = '{}' WHERE id_acteur_xaf = {} AND id_film_xaf = {}".format(self.XacteurFilmPersonnage.text().capitalize(), ActeurId, FilmId))
+                print("UPDATE xacteurfilm SET personnage_xaf = '{}' WHERE id_acteur_xaf = {} AND id_film_xaf = {}".format(self.XacteurFilmPersonnage.text().capitalize(), ActeurId, FilmId))
                 CloseAll(self.curseur, self.connexion)
                 self.w = LastWindow("Contenu de la table xacteurfilm", self.X, self.Y, "xacteurfilm", self.Iteration)
                 self.close()
                 self.w.show()
             else:
-                print("679 \t: Cet acteur a déjà été lié à ce film")
+                print("Cet acteur a déjà été lié à ce film")
                 CloseAll(self.curseur, self.connexion)
 
 
@@ -668,7 +666,7 @@ class OtherWindow(QWidget):
         self.connexion = sqlite3.connect(database)
         self.curseur = self.connexion.cursor()
         self.curseur.execute("ALTER TABLE xacteurfilm ADD personnage_xaf TEXT(64)")
-        print("687 \t: ALTER TABLE xacteurfilm ADD personnage_xaf TEXT(64)")
+        print("ALTER TABLE xacteurfilm ADD personnage_xaf TEXT(64)")
         CloseAll(self.curseur, self.connexion)
         self.w = OtherWindow("Choix XacteurFilm", self.X, self.Y, "xacteurfilm", self.Iteration)
         self.close()
@@ -679,26 +677,26 @@ class OtherWindow(QWidget):
         self.connexion = sqlite3.connect(database)
         self.curseur = self.connexion.cursor()
         self.curseur.execute("PRAGMA table_info(acteur)")
-        print("698 \t: PRAGMA table_info(acteur)")
+        print("PRAGMA table_info(acteur)")
         if len(self.curseur.fetchall()) <= 3:
             req = 'INSERT INTO acteur (nom_acteur, prenom_acteur) VALUES (?, ?)'
             data = [self.NomActeurLine.text().capitalize(), self.PrenomActeurLine.text().capitalize()]
             Exists = False
             self.curseur.execute("SELECT * FROM acteur")
-            print("704 \t: SELECT * FROM acteur")
+            print("SELECT * FROM acteur")
             b = self.curseur.fetchall()
             for i in range(len(b)):
                 if data[0] + ' ' + data[1] == b[i][1].capitalize() + ' ' + b[i][2].capitalize():          # Si le nom prenom entré (en minuscule) est égal à l'un présent dans la table
-                    print("708 \t: Cet acteur existe déjà dans la table, son id est {}".format(b[i][0]))
+                    print("Cet acteur existe déjà dans la table, son id est {}".format(b[i][0]))
                     Exists = True
             if not Exists:
                 try:
                     int(data[0]), int(data[1])
                 except ValueError:
-                   print("714 \t: ", req, data)
+                   print(req, data)
                    self.curseur.execute(req, data)
                 else:
-                    print("717 \t: ERREUR : doit être de type str")
+                    print("ERREUR : doit être de type str")
                     return "acteur"
             CloseAll(self.curseur, self.connexion)
             self.w = LastWindow("Contenu de la table acteur", self.X, self.Y, "acteur", self.Iteration)
@@ -710,10 +708,10 @@ class OtherWindow(QWidget):
             Exists = False
             NationaliteExists = False
             self.curseur.execute("SELECT * FROM acteur")
-            print("729 \t: SELECT * FROM acteur")
+            print("SELECT * FROM acteur")
             b = self.curseur.fetchall()
             self.curseur.execute("SELECT * FROM nationalite")
-            print("732 \t: SELECT * FROM nationalite")
+            print("SELECT * FROM nationalite")
             a = self.curseur.fetchall()
             for i in range (len(a)):
                 if self.NationaliteLine.text().upper() == a[i][1]:
@@ -725,27 +723,27 @@ class OtherWindow(QWidget):
                     int(self.NationaliteLine.text().upper())
                 except ValueError:
                     self.curseur.execute("INSERT INTO nationalite (nom_nationalite) VALUES ('{}')".format(self.NationaliteLine.text().upper()))
-                    print("744 \t: INSERT INTO nationalite (nom_nationalite) VALUES ('{}')".format(self.NationaliteLine.text().upper()))
+                    print("INSERT INTO nationalite (nom_nationalite) VALUES ('{}')".format(self.NationaliteLine.text().upper()))
                     data[2] = len(a) + 1
                 else:
-                    print("747 \t: Le nom de la nationalite doit être str")
+                    print("Le nom de la nationalite doit être str")
                     return "acteur"
             for i in range(len(b)):
                 if data[0] + ' ' + data[1] == b[i][1].capitalize() + ' ' + b[i][2].capitalize() and data[2] == b[i][3]:          # Si le nom prenom entré (en minuscule) est égal à l'un présent dans la table
-                    print("751 \t: Cet acteur existe déjà dans la table, son id est {}".format(b[i][0]))
+                    print("Cet acteur existe déjà dans la table, son id est {}".format(b[i][0]))
                     Exists = True
                 if data[0] == b[i][1].capitalize() and data[1] == b[i][2].capitalize() and b[i][3] == None:
-                    print("754 \t: UPDATE acteur SET personnage_xaf = '{}' WHERE nom_acteur = '{}' AND prenom_acteur = '{}'".format(data[2], data[0], data[1]))
+                    print("UPDATE acteur SET personnage_xaf = '{}' WHERE nom_acteur = '{}' AND prenom_acteur = '{}'".format(data[2], data[0], data[1]))
                     self.curseur.execute("UPDATE acteur SET id_nationalite_acteur = {} WHERE nom_acteur = '{}' AND prenom_acteur = '{}'".format(data[2], data[0], data[1]))
                     Exists = True
             if not Exists:
                 try:
                     int(data[0]), int(data[1])
                 except ValueError:
-                    print("761 \t: ", req, data)
+                    print(req, data)
                     self.curseur.execute(req, data) 
                 else:
-                    print("764 \t: ERREUR : doit être de type str")
+                    print("ERREUR : doit être de type str")
                     return "acteur"
             CloseAll(self.curseur, self.connexion)
             self.w = LastWindow("Contenu de la table acteur", self.X, self.Y, "acteur", self.Iteration)
@@ -757,17 +755,17 @@ class OtherWindow(QWidget):
         self.connexion = sqlite3.connect(database)
         self.curseur = self.connexion.cursor()
         self.curseur.execute("ALTER TABLE acteur RENAME TO oldacteur")
-        print("776 \t: ALTER TABLE acteur RENAME TO oldacteur")
+        print("ALTER TABLE acteur RENAME TO oldacteur")
         self.curseur.execute("CREATE TABLE acteur (id_acteur INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, nom_acteur TEXT NOT NULL, prenom_acteur TEXT NOT NULL, id_nationalite_acteur INTEGER, FOREIGN KEY(id_nationalite_acteur) REFERENCES nationalite(id_nationalite))")
-        print("778 \t: CREATE TABLE acteur (id_acteur INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, nom_acteur TEXT NOT NULL, prenom_acteur TEXT NOT NULL, id_nationalite_acteur INTEGER, FOREIGN KEY(id_nationalite_acteur) REFERENCES nationalite(id_nationalite))")
+        print("CREATE TABLE acteur (id_acteur INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, nom_acteur TEXT NOT NULL, prenom_acteur TEXT NOT NULL, id_nationalite_acteur INTEGER, FOREIGN KEY(id_nationalite_acteur) REFERENCES nationalite(id_nationalite))")
         self.curseur.execute("SELECT * FROM oldacteur")
-        print("780 \t: SELECT * FROM oldacteur")
+        print("SELECT * FROM oldacteur")
         old = self.curseur.fetchall()
         for i in range (len(old)):
             self.curseur.execute("INSERT INTO acteur (id_acteur, nom_acteur, prenom_acteur) VALUES ({}, '{}', '{}')".format(old[i][0], old[i][1].capitalize(), old[i][2].capitalize()))     # On copie les valeurs de l'ancienne table acteur vers la nouvelle
-            print("784 \t: INSERT INTO acteur (id_acteur, nom_acteur, prenom_acteur) VALUES ({}, '{}', '{}')".format(old[i][0], old[i][1].capitalize(), old[i][2].capitalize()))
+            print("INSERT INTO acteur (id_acteur, nom_acteur, prenom_acteur) VALUES ({}, '{}', '{}')".format(old[i][0], old[i][1].capitalize(), old[i][2].capitalize()))
         self.curseur.execute("DROP TABLE oldacteur")            # Suppression de l'ancienne table acteur, qui ne sert plus à rien
-        print("786 \t: DROP TABLE oldacteur")
+        print("DROP TABLE oldacteur")
         CloseAll(self.curseur, self.connexion)
         self.close()
         self.w = OtherWindow("Ajout d'un Acteur", self.X, self.Y, "acteur", self.Iteration)
@@ -794,7 +792,7 @@ class LastWindow(QWidget):
             self.connexion = sqlite3.connect(database)
             self.curseur = self.connexion.cursor()
             self.curseur.execute("SELECT * FROM {}".format(Table))
-            print("813 \t: SELECT * FROM {}".format(Table))
+            print("SELECT * FROM {}".format(Table))
             temp = self.curseur.fetchall()
             if temp == []:                                                  #   Si la table séléctionnée est vide
                 self.resize(X, Y)
@@ -885,17 +883,17 @@ class EmergencyWindow(QWidget):                                                 
         req = 'INSERT INTO realisateur (nom_realisateur, prenom_realisateur, ddn_realisateur, id_nationalite_realisateur) VALUES (?, ?, ?, ?)'
         data = [self.NomRealisateurLine.text().capitalize(), self.PrenomRealisateurLine.text().capitalize(), self.DdnRealisateurLine.text()]
         self.curseur.execute('SELECT * FROM nationalite')
-        print("888 \t: SELECT * FROM nationalite")
+        print("SELECT * FROM nationalite")
         b = self.curseur.fetchall()
         self.curseur.execute('SELECT * FROM realisateur')
-        print("891 \t: \tSELECT * FROM realisateur")
+        print("\tSELECT * FROM realisateur")
         d = self.curseur.fetchall()
         Exist = False
         IsFound = False
         for c in range(len(d)):
             # print(data[0].lower() + ' ' + data[1].lower(), d[c][1].lower() + ' ' + d[c][2].lower(), data[0].lower() + ' ' + data[1].lower() == d[c][1].lower() + ' ' + d[c][2].lower())
             if data[0] + ' ' + data[1] == d[c][1].capitalize() + ' ' + d[c][2].capitalize():                  # Si le nom prenom entré (en minuscule) est égal à l'un présent dans la table realisateur
-                print("898 \t: Ce réalisateur existe déjà dans la table, son id est {}".format(d[c][0]))
+                print("Ce réalisateur existe déjà dans la table, son id est {}".format(d[c][0]))
                 Exist = True   
         for c in range(len(b)):
             if self.NationaliteRealisateurLine.text().upper() == b[c][1]:                                                                 # Si la fin du tableau data[], qui contient la nationalité, est identique à l'une des valeurs de la table nationalité (le tableau ressemble à [id, nationalite], [id, nationalite], ...)
@@ -908,19 +906,19 @@ class EmergencyWindow(QWidget):                                                 
                 int(self.NationaliteRealisateurLine.text().upper())
             except ValueError:
                 self.curseur.execute("INSERT INTO nationalite (nom_nationalite) VALUES ('{}')".format(self.NationaliteRealisateurLine.text().upper()))     # Créer une nouvelle nationalité sachant que data[len(a) - 1] contient la nationalité entree par l'utilisateur
-                print("911 \t: INSERT INTO nationalite (nom_nationalite) VALUES ('{}')".format(self.NationaliteRealisateurLine.text().upper()))
+                print("INSERT INTO nationalite (nom_nationalite) VALUES ('{}')".format(self.NationaliteRealisateurLine.text().upper()))
                 data.append(len(b) + 1)
             else:
-                print("914 \t: Le nom de la nationalite doit être str")
+                print("Le nom de la nationalite doit être str")
                 return "realisateur"
         if not Exist and len(data) == 4:
             try:
                 int(data[0]), int(data[1])
             except ValueError:
-                print("920 \t: ", req, data)
+                print(req, data)
                 self.curseur.execute(req, data)
             else:
-                print("923 \t: ERREUR : doit être de type str")
+                print("ERREUR : doit être de type str")
                 return "realisateur"
         CloseAll(self.curseur, self.connexion)
         self.close()
@@ -934,20 +932,20 @@ class EmergencyWindow(QWidget):                                                 
         # Vérifier si l'entrée n'existe pas déjà
         Exists = False
         self.curseur.execute("SELECT * FROM acteur")
-        print("937 \t: SELECT * FROM acteur")
+        print("SELECT * FROM acteur")
         b = self.curseur.fetchall()
         for i in range(len(b)):
             if data[0] + ' ' + data[1] == b[i][1].capitalize() + ' ' + b[i][2].capitalize():          # Si le nom prenom entré (en minuscule) est égal à l'un présent dans la table
-                print("941 \t: Cet acteur existe déjà dans la table, son id est {}".format(b[i][0]))
+                print("Cet acteur existe déjà dans la table, son id est {}".format(b[i][0]))
                 Exists = True
         if not Exists:
             try:
                 int(data[0]) , int(data[1])
             except ValueError:
-                print("947 \t: ", req, data)
+                print(req, data)
                 self.curseur.execute(req, data)
             else:
-                print("950 \t: ERREUR : doit être de type str")
+                print("ERREUR : doit être de type str")
                 return "acteur"
         CloseAll(self.curseur, self.connexion)
         self.close()
@@ -957,17 +955,17 @@ class EmergencyWindow(QWidget):                                                 
         self.connexion = sqlite3.connect(database)
         self.curseur = self.connexion.cursor()
         self.curseur.execute("ALTER TABLE acteur RENAME TO oldacteur")
-        print("960 \t: ALTER TABLE acteur RENAME TO oldacteur")
+        print("ALTER TABLE acteur RENAME TO oldacteur")
         self.curseur.execute("CREATE TABLE acteur (id_acteur INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, nom_acteur TEXT NOT NULL, prenom_acteur TEXT NOT NULL, id_nationalite_acteur INTEGER, FOREIGN KEY(id_nationalite_acteur) REFERENCES nationalite(id_nationalite))")
-        print("962 \t: CREATE TABLE acteur (id_acteur INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, nom_acteur TEXT NOT NULL, prenom_acteur TEXT NOT NULL, id_nationalite_acteur INTEGER, FOREIGN KEY(id_nationalite_acteur) REFERENCES nationalite(id_nationalite))")
+        print("CREATE TABLE acteur (id_acteur INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, nom_acteur TEXT NOT NULL, prenom_acteur TEXT NOT NULL, id_nationalite_acteur INTEGER, FOREIGN KEY(id_nationalite_acteur) REFERENCES nationalite(id_nationalite))")
         self.curseur.execute("SELECT * FROM oldacteur")
-        print("964 \t: SELECT * FROM oldacteur")
+        print("SELECT * FROM oldacteur")
         old = self.curseur.fetchall()
         for i in range (len(old)):
             self.curseur.execute("INSERT INTO acteur (id_acteur, nom_acteur, prenom_acteur) VALUES ({}, '{}', '{}')".format(old[i][0], old[i][1].capitalize(), old[i][2].capitalize()))
-            print("968 \t: INSERT INTO acteur (id_acteur, nom_acteur, prenom_acteur) VALUES ({}, '{}', '{}')".format(old[i][0], old[i][1].capitalize(), old[i][2].capitalize()))
+            print("INSERT INTO acteur (id_acteur, nom_acteur, prenom_acteur) VALUES ({}, '{}', '{}')".format(old[i][0], old[i][1].capitalize(), old[i][2].capitalize()))
         self.curseur.execute("DROP TABLE oldacteur")
-        print("970 \t: DROP TABLE oldacteur")
+        print("DROP TABLE oldacteur")
         CloseAll(self.curseur, self.connexion)
         self.close()
         
