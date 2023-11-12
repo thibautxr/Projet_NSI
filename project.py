@@ -25,7 +25,7 @@ def TableExist(table):
         curseur.execute("SELECT * FROM {}".format(table))
         print("SELECT * FROM {}".format(table))
     except sqlite3.OperationalError:            # Si la table n'existe pas
-        print("\tERREUR : La table {} n'existe pas".format(table))
+        print("ERREUR : La table {} n'existe pas".format(table))
         boool = False
     CloseAll(curseur, connexion)
     return boool
@@ -253,7 +253,7 @@ def AddLink(self):
     t = self.curseur.fetchall()
     if t == []:                                     # Si la requête ne renvoie rien, mais pas d'erreur sqlite3.OperationError, c'est que la table existe mais est vide
         CloseAll(self.curseur, self.connexion)
-        print("\tIl n'y a pas d'acteur dans la table acteur, Redirection vers le programme d'ajout d'acteur")
+        print("t Il n'y a pas d'acteur dans la table acteur, Redirection vers le programme d'ajout d'acteur")
         self.EWin = EmergencyWindow(1)
         self.EWin.show()
         return "xacteurfilm"
@@ -327,6 +327,8 @@ def AddLink(self):
     return 0
 
 
+
+
 class FirstWindow(QWidget):                                 # Ne s'ouvre que quand c'est la première ouverture, les fonctions rudimentaires de cette classe ne sont pas documentées
     def __init__(self):
         super().__init__()
@@ -376,11 +378,13 @@ class FirstWindow(QWidget):                                 # Ne s'ouvre que qua
         self.Window.show()
 
 
+
 class Window(QWidget):
     def __init__(self, Title: str, X: int, Y: int, Iteration: int = 0):
         super().__init__()
         self.Iteration = Iteration
-        self.X, self.Y = X, Y
+        self.X = X
+        self.Y = Y
         self.setWindowTitle(Title)
         self.resize(Y, X)
         self.ActeurWasJustCreated = False 
@@ -413,8 +417,9 @@ class Window(QWidget):
             self.win.show()
         elif sender.text().lower() == "Creer les tables Acteur et XacteurFilm".lower():
             TableActeur()
-            self.ActeurWasJustCreated = True                                            # Permet de relancer le programme une seconde fois après la création des tables
+            self.win = Window("Projet NSI", self.X, self.Y, self.Iteration + 1)
             self.close()
+            self.win.show()
         elif sender.text().lower() == "Comment tester les exercices ?".lower():
             self.win =EmergencyWindow(3)
             self.close()
@@ -425,12 +430,14 @@ class Window(QWidget):
             self.win.show()
 
 
+
 class OtherWindow(QWidget):
     def __init__(self, Title: str, X: int, Y: int, Bouton: str, Iteration: int = 0):
         super().__init__()
         self.Iteration = Iteration
         self.setWindowTitle(Title)
-        self.Y, self.X = Y, X
+        self.X = X
+        self.Y = Y
         self.resize(self.Y, self.X)
         self.layout = QVBoxLayout()
         if Bouton == "realisateur":
@@ -464,7 +471,7 @@ class OtherWindow(QWidget):
         IsFound = False
         for c in range(len(d)):
             if data[0] + ' ' + data[1] == d[c][1].capitalize() + ' ' + d[c][2].capitalize():                  # Si le nom prenom entré (en minuscule) est égal à l'un présent dans la table realisateur
-                print("\tCe réalisateur existe déjà dans la table, son id est {}".format(d[c][0]))
+                print("\t Ce réalisateur existe déjà dans la table, son id est {}".format(d[c][0]))
                 Exist = True 
         for c in range(len(b)):
             if self.NationaliteRealisateurLine.text().upper() == b[c][1]:                                                                 # Si la fin du tableau data[], qui contient la nationalité, est identique à l'une des valeurs de la table nationalité (le tableau ressemble à [id, nationalite], [id, nationalite], ...)
@@ -480,7 +487,7 @@ class OtherWindow(QWidget):
                 print("INSERT INTO nationalite (nom_nationalite) VALUES ('{}')".format(self.NationaliteRealisateurLine.text().upper()))
                 data.append(len(b) + 1)
             else:
-                print("\tLe nom de la nationalite doit être str")
+                print("Le nom de la nationalite doit être str")
                 return "realisateur"
         if not Exist:
             try:
@@ -489,7 +496,7 @@ class OtherWindow(QWidget):
                 self.curseur.execute(req, data)
                 print("INSERT INTO realisateur (nom_realisateur, prenom_realisateur, ddn_realisateur, id_nationalite_realisateur) VALUES ('{}', '{}', {}, {})".format(data[0].capitalize(), data[1].capitalize(), data[2], data[3]))
             else:
-                print("\tERREUR : doit être de type str")
+                print("ERREUR : doit être de type str")
                 return "realisateur"
         CloseAll(self.curseur, self.connexion)
         self.w = LastWindow("Contenu de la table Realisateur", self.Y, self.Y, "realisateur", self.Iteration)
@@ -526,10 +533,10 @@ class OtherWindow(QWidget):
             except ValueError:
                 self.curseur.execute("INSERT INTO nationalite (nom_nationalite) VALUES ('{}')".format(data[len(data) - 2])) 
                 print("INSERT INTO nationalite (nom_nationalite) VALUES ('{}')".format(data[len(data) - 2]))                        
-                print("\tCette nationalité n'était pas dans la table, elle a donc été ajoutée")
+                print("\t Cette nationalité n'était pas dans la table, elle a donc été ajoutée")
                 data[len(data) - 2] = b[len(b) - 1][0] + 1
             else:
-                print("\tLe nom de la nationalite doit être str")
+                print("Le nom de la nationalite doit être str")
                 return "film"
             
         self.curseur.execute('SELECT * FROM genre') 
@@ -547,10 +554,10 @@ class OtherWindow(QWidget):
             except ValueError:
                 self.curseur.execute("INSERT INTO genre (nom_genre) VALUES ('{}')".format(data[len(data) - 1]))                     
                 print("INSERT INTO genre (nom_genre) VALUES ('{}')".format(data[len(data) - 1]))
-                print("\tCe genre n'était pas dans la table, il a donc été ajouté")
+                print("\t Ce genre n'était pas dans la table, il a donc été ajouté")
                 data[len(data) - 1] = b[len(b) - 1][0] + 1
             else:
-                print("\tERREUR : doit être de type str")
+                print("ERREUR : doit être de type str")
                 return "film"
         self.curseur.execute("SELECT id_realisateur, nom_realisateur, prenom_realisateur FROM realisateur")
         print("SELECT id_realisateur, nom_realisateur, prenom_realisateur FROM realisateur")                            #       |
@@ -562,11 +569,11 @@ class OtherWindow(QWidget):
                 data[len(data) - 3] = b[c][0]                                                                                   #       |
                 IsFound = True                                                                                                  #       |
         if not IsFound:                                                                                                         #       |
-            print("\tCe réalisateur n'est pas présent dans la table, vous allez être redirigé vers le programme d'ajout de réalisateur")
+            print("\t Ce réalisateur n'est pas présent dans la table, vous allez être redirigé vers le programme d'ajout de réalisateur")
             CloseAll(self.curseur, self.connexion)
             NomPrenom = self.RealisateurFilmLine.text().split(" ")
             if len(NomPrenom) != 2:
-                print("\tLes prénoms/noms composés doivent être séparés d'un tiret (-)")
+                print("Les prénoms/noms composés doivent être séparés d'un tiret (-)")
                 self.close()
                 self.EWin = EmergencyWindow(0)
                 self.EWin.show()
@@ -585,7 +592,7 @@ class OtherWindow(QWidget):
                     data[len(data) - 3] = b[c][0]                                                                               #       |
                     IsFound = True                                                                                              #       |
             if not IsFound:                                                                                                     #       |
-                print("\tCe réalisateur n'est pas présent dans la table, faites attention à taper le même réalisateur dans le programme et dans la sous-programme d'ajout")
+                print("\t Ce réalisateur n'est pas présent dans la table, faites attention à taper le même réalisateur dans le programme et dans la sous-programme d'ajout")
                 CloseAll(self.curseur, self.connexion)
                 return 1
         self.curseur.execute("SELECT titre_film, annee_film, id_realisateur_film, id_nationalite_film, id_genre_film FROM film")
@@ -594,7 +601,7 @@ class OtherWindow(QWidget):
         Exists = False
         for i in range(len(a)):
             if a[i][0] == data[0] and a[i][1] == data[1] and a[i][2] == data[2] and a[i][3] == data[3] and a[i][4] == data[4]:
-                print("\tCe film est déja dans la table, il se trouve à l'indice {} et son id est {}".format(i, a[i][0]))
+                print("\t Ce film est déja dans la table, il se trouve à l'indice {} et son id est {}".format(i, a[i][0]))
                 Exists = True
                 CloseAll(self.curseur, self.connexion)
                 break
@@ -603,7 +610,7 @@ class OtherWindow(QWidget):
                 int(data[0]), int(data[1]) , int(data[2])
             except ValueError:
                 self.curseur.execute(req, data)
-                print(req, data)    
+                print("INSERT INTO film (titre_film, annee_film, id_realisateur_film, id_nationalite_film, id_genre_film) VALUES ('{}', {}, {}, {}, {})".format(data[0], data[1], data[2], data[3], data[4]))
                 CloseAll(self.curseur, self.connexion)
                 self.setLayout(self.layout)
             else:
@@ -630,7 +637,7 @@ class OtherWindow(QWidget):
                 self.close()
                 self.w.show()
             else:
-                print("Cet acteur a déjà été lié à ce film")
+                print("\t Cet acteur a déjà été lié à ce film")
                 CloseAll(self.curseur, self.connexion)
         if self.PersonnageExists:
             self.curseur.execute("SELECT personnage_xaf FROM xacteurfilm WHERE id_acteur_xaf = {} AND id_film_xaf = {}".format(ActeurId, FilmId))       # L'interêt de séléctionner le personnage seulement est qu'on peut séparer un retour "None" et un retour vide, afin de 
@@ -658,7 +665,7 @@ class OtherWindow(QWidget):
                 self.close()
                 self.w.show()
             else:
-                print("Cet acteur a déjà été lié à ce film")
+                print("\t Cet acteur a déjà été lié à ce film")
                 CloseAll(self.curseur, self.connexion)
 
 
@@ -687,13 +694,13 @@ class OtherWindow(QWidget):
             b = self.curseur.fetchall()
             for i in range(len(b)):
                 if data[0] + ' ' + data[1] == b[i][1].capitalize() + ' ' + b[i][2].capitalize():          # Si le nom prenom entré (en minuscule) est égal à l'un présent dans la table
-                    print("Cet acteur existe déjà dans la table, son id est {}".format(b[i][0]))
+                    print("\t Cet acteur existe déjà dans la table, son id est {}".format(b[i][0]))
                     Exists = True
             if not Exists:
                 try:
                     int(data[0]), int(data[1])
                 except ValueError:
-                   print(req, data)
+                   print("INSERT INTO acteur (nom_acteur, prenom_acteur) VALUES ('{}', '{}')".format(data[0], data[1]))
                    self.curseur.execute(req, data)
                 else:
                     print("ERREUR : doit être de type str")
@@ -730,7 +737,7 @@ class OtherWindow(QWidget):
                     return "acteur"
             for i in range(len(b)):
                 if data[0] + ' ' + data[1] == b[i][1].capitalize() + ' ' + b[i][2].capitalize() and data[2] == b[i][3]:          # Si le nom prenom entré (en minuscule) est égal à l'un présent dans la table
-                    print("Cet acteur existe déjà dans la table, son id est {}".format(b[i][0]))
+                    print("\t Cet acteur existe déjà dans la table, son id est {}".format(b[i][0]))
                     Exists = True
                 if data[0] == b[i][1].capitalize() and data[1] == b[i][2].capitalize() and b[i][3] == None:
                     print("UPDATE acteur SET personnage_xaf = '{}' WHERE nom_acteur = '{}' AND prenom_acteur = '{}'".format(data[2], data[0], data[1]))
@@ -740,7 +747,7 @@ class OtherWindow(QWidget):
                 try:
                     int(data[0]), int(data[1])
                 except ValueError:
-                    print(req, data)
+                    print("INSERT INTO acteur (nom_acteur, prenom_acteur, id_nationalite_acteur) VALUES ('{}', '{}', {})".format(data[0], data[1], data[2]))
                     self.curseur.execute(req, data) 
                 else:
                     print("ERREUR : doit être de type str")
@@ -785,7 +792,8 @@ class LastWindow(QWidget):
             self.setStyleSheet(BackgroundCSS)
             self.setWindowTitle(Title)
             self.resize(Y, X)
-            self.X, self.Y = X, Y
+            self.X = X
+            self.Y = Y
             self.Table = Table
             self.Hlayout = QHBoxLayout()
             self.layout = QVBoxLayout()
@@ -886,14 +894,14 @@ class EmergencyWindow(QWidget):                                                 
         print("SELECT * FROM nationalite")
         b = self.curseur.fetchall()
         self.curseur.execute('SELECT * FROM realisateur')
-        print("\tSELECT * FROM realisateur")
+        print("SELECT * FROM realisateur")
         d = self.curseur.fetchall()
         Exist = False
         IsFound = False
         for c in range(len(d)):
             # print(data[0].lower() + ' ' + data[1].lower(), d[c][1].lower() + ' ' + d[c][2].lower(), data[0].lower() + ' ' + data[1].lower() == d[c][1].lower() + ' ' + d[c][2].lower())
             if data[0] + ' ' + data[1] == d[c][1].capitalize() + ' ' + d[c][2].capitalize():                  # Si le nom prenom entré (en minuscule) est égal à l'un présent dans la table realisateur
-                print("Ce réalisateur existe déjà dans la table, son id est {}".format(d[c][0]))
+                print("\t Ce réalisateur existe déjà dans la table, son id est {}".format(d[c][0]))
                 Exist = True   
         for c in range(len(b)):
             if self.NationaliteRealisateurLine.text().upper() == b[c][1]:                                                                 # Si la fin du tableau data[], qui contient la nationalité, est identique à l'une des valeurs de la table nationalité (le tableau ressemble à [id, nationalite], [id, nationalite], ...)
@@ -915,7 +923,7 @@ class EmergencyWindow(QWidget):                                                 
             try:
                 int(data[0]), int(data[1])
             except ValueError:
-                print(req, data)
+                print("INSERT INTO realisateur (nom_realisateur, prenom_realisateur, ddn_realisateur, id_nationalite_realisateur) VALUES ('{}', '{}', {}, {})".format(data[0], data[1], data[2], data[3]))
                 self.curseur.execute(req, data)
             else:
                 print("ERREUR : doit être de type str")
@@ -936,13 +944,13 @@ class EmergencyWindow(QWidget):                                                 
         b = self.curseur.fetchall()
         for i in range(len(b)):
             if data[0] + ' ' + data[1] == b[i][1].capitalize() + ' ' + b[i][2].capitalize():          # Si le nom prenom entré (en minuscule) est égal à l'un présent dans la table
-                print("Cet acteur existe déjà dans la table, son id est {}".format(b[i][0]))
+                print("\t Cet acteur existe déjà dans la table, son id est {}".format(b[i][0]))
                 Exists = True
         if not Exists:
             try:
                 int(data[0]) , int(data[1])
             except ValueError:
-                print(req, data)
+                print("INSERT INTO acteur (nom_acteur, prenom_acteur) VALUES ('{}', '{}')".format(data[0], data[1]))
                 self.curseur.execute(req, data)
             else:
                 print("ERREUR : doit être de type str")
@@ -975,25 +983,17 @@ app = QApplication.instance()
 if not app:
     app = QApplication([])
 
-with open('settings', 'a+') as fichier:
-    fichier.seek(0)        # fseek(SEEK_SET)
-
-    if fichier.readline() == '':
+try:
+    open('settings', 'r')
+except FileNotFoundError:
+    with open('settings', 'w') as fichier:
         fichier.write("FirstLaunchFalse")
         FW = FirstWindow()
         FW.show()
         fichier.close()
         app.exec()
 
-    else:
-        win = Window("Projet NSI", X, Y)
-        win.show()
-        app.exec()
-        app2 = QApplication.instance() 
-        if not app2:
-            app2 = QApplication([])
-        if win.ActeurWasJustCreated:
-            win.close()
-            win2 = Window("Projet NSI", X, Y)
-            win2.show()
-            app2.exec()
+else:
+    win = Window("Projet NSI", X, Y)
+    win.show()
+    app.exec()
